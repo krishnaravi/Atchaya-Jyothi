@@ -1,0 +1,59 @@
+Pancha Pakshi Calculator WordPress Plugin - Version 2.1 (Divi & Frontend Fix)
+
+**Overview:**
+This plugin calculates the Janma Pakshi (birth bird) based on birth details and displays the daily Pancha Pakshi activities. This version is specifically optimized for compatibility with page builders like Divi and ensures robust frontend display.
+
+**Key Features:**
+- Janma Pakshi calculation based on Nakshatra and Paksha.
+- Daily Pancha Pakshi activity table.
+- Admin menu for easy access and testing.
+- **All CSS and JavaScript are now INLINED within the main PHP file (`pancha-pakshi.php`) to prevent loading issues with themes and page builders.**
+- **Simplified location input: Autocomplete and browser auto-location features have been removed.** Users must enter one of the currently supported major Indian cities (Chennai, Madurai, Mumbai, Delhi, Kolkata, Bangalore, Hyderabad).
+- Enhanced error reporting for Python execution issues.
+
+**Architecture:**
+- **Frontend:** HTML form rendered via WordPress shortcode. All styling and client-side logic (AJAX calls) are inlined for maximum compatibility.
+- **Backend (PHP):** Handles AJAX requests, sanitizes input, and executes a Python script for astrological calculations.
+- **Backend (Python):** `pancha_pakshi_calculator.py` performs Nakshatra, Paksha, and Janma Pakshi calculations using the `ephem` library.
+
+**Supported Cities for Calculation:**
+- Chennai
+- Madurai
+- Mumbai
+- Delhi
+- Kolkata
+- Bangalore
+- Hyderabad
+(If an unsupported city is entered, the calculation will default to Chennai's coordinates.)
+
+**Installation:**
+1. Upload `pancha-pakshi-final-fix.zip` via WordPress Admin (Plugins -> Add New -> Upload Plugin).
+2. Activate the plugin.
+3. Insert the shortcode `[pancha_pakshi_calculator]` into any page/post. For Divi/Elementor, use a "Code Module" or "Text Module".
+
+**Server Requirements:**
+- WordPress 5.0+
+- PHP 7.4+
+- Python 3.6+ (on server)
+- PyEphem library (`sudo pip3 install ephem`)
+
+**Known Limitations:**
+- Location calculation is limited to a hardcoded list of major Indian cities. Generic autocomplete is not supported in this version.
+- Timezone handling is based on the server's default or assumed UTC conversion in Python. For precise calculations, ensure server timezone is correctly configured.
+
+**Changelog:**
+- **Version 2.1 (2024-04-04):**
+    - Inlined all CSS and JavaScript into `pancha-pakshi.php` for Divi/Frontend compatibility.
+    - Removed Nominatim-based autocomplete and browser auto-location.
+    - Simplified location input to supported cities only.
+    - Strengthened shortcode processing for page builders.
+    - Improved error messages for Python execution.
+- **Version 1.3 (2024-04-04):**
+    - Fixed PHP syntax errors preventing activation.
+    - Added Admin Menu for direct access to the calculator.
+    - Enhanced error reporting.
+- **Version 1.2 (2024-04-04):**
+    - Initial release with core calculation logic.
+    - Basic WordPress plugin structure.
+
+**Author:** Manus AI
