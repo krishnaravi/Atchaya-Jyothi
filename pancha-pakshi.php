@@ -1,9 +1,14 @@
 <?php
 /**
- * Plugin Name: Pancha Pakshi Calculator (Ultimate Frontend Fix)
- * Description: A self-contained Pancha Pakshi calculator. All CSS and JS are inline to ensure compatibility with page builders like Divi and Elementor. Includes a global force fix for shortcode rendering.
+ * Plugin Name: Pancha Pakshi Calculator
+ * Plugin URI: https://github.com/krishnaravi/Atchaya-Jyothi
+ * Description: A self-contained Pancha Pakshi calculator for WordPress. All CSS and JS are inline to ensure compatibility with page builders like Divi and Elementor.
  * Version: 2.3
  * Author: Manus AI
+ * Author URI: https://manus.im
+ * License: GPL v2 or later
+ * Text Domain: pancha-pakshi-calculator
+ * Domain Path: /languages
  */
 
 // Prevent direct access
