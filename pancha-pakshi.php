@@ -473,7 +473,8 @@ function pancha_pakshi_calculator_shortcode_master() {
                         </div>
                         <input type="hidden" id="birth_lat" name="birth_lat">
                         <input type="hidden" id="birth_lon" name="birth_lon">
-                    </div>nfo-text">ஆதரிக்கப்படும் முக்கிய நகரங்கள்: சென்னை, மதுரை, மும்பை, டெல்லி, கொல்கத்தா, பெங்களூரு, ஹைதராபாத். பிற நகரங்களுக்கு சென்னை கணக்கீடு பயன்படுத்தப்படும்.</p>
+                    </div>
+                    <p class="info-text">ஆதரிக்கப்படும் முக்கிய நகரங்கள்: சென்னை, மதுரை, மும்பை, டெல்லி, கொல்கத்தா, பெங்களூரு, ஹைதராபாத். பிற நகரங்களுக்கு சென்னை கணக்கீடு பயன்படுத்தப்படும்.</p>
             </div>
 
             <button type="submit" class="btn-calculate">கணக்கிடு / Calculate</button>
@@ -669,7 +670,12 @@ function pancha_pakshi_calculator_shortcode_master() {
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         form.find(".btn-calculate").html("கணக்கிடு / Calculate").prop("disabled", false);
-                        showMessage("Network Error: Could not connect to the server. Please try again.", "error");
+                        let errorMsg = "Network Error: Could not connect to the server.";
+                        if (jqXHR.status === 404) errorMsg = "Error: AJAX URL not found (404).";
+                        else if (jqXHR.status === 500) errorMsg = "Server Error (500): Please check server logs.";
+                        else if (textStatus === 'timeout') errorMsg = "Request Timeout: Server took too long to respond.";
+                        
+                        showMessage(errorMsg + " Please try again. (Details: " + textStatus + ")", "error");
                         console.error("AJAX Error: ", textStatus, errorThrown, jqXHR.responseText);
                     }
                 });

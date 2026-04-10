@@ -112,10 +112,12 @@ def calculate_pancha_pakshi(birth_date, birth_time, birth_place, person_name, la
         else:
             latitude, longitude = get_location_coordinates(birth_place)
             
-        # For simplicity, assume IST (+5:30) if no timezone is provided
-        # Professional implementation should use a timezone library
+        # Assume IST (+5:30)
         dt_utc = dt_local - timedelta(hours=5, minutes=30)
         jd_utc = get_julian_day(dt_utc)
+        
+        # Swiss Ephemeris needs to be reset for each calculation to be safe
+        swe.set_ephe_path(None) # Use built-in ephemeris if files not found
         
         # Calculate Nakshatra and Paksha using Swiss Ephemeris
         nakshatra = get_nakshatra(jd_utc)
@@ -132,9 +134,12 @@ def calculate_pancha_pakshi(birth_date, birth_time, birth_place, person_name, la
         
         # Convert JD back to local time
         def jd_to_local_str(jd_val):
+            # Ensure jd_val is a float
             year, month, day, hour = swe.revjul(float(jd_val))
-            h = int(hour)
-            m = int((hour - h) * 60)
+            # hour is decimal hours (0-24)
+            total_minutes = int(hour * 60)
+            h = total_minutes // 60
+            m = total_minutes % 60
             # Adjust back to IST (+5:30)
             dt = datetime(year, month, day, h, m) + timedelta(hours=5, minutes=30)
             return dt.strftime("%H:%M")
