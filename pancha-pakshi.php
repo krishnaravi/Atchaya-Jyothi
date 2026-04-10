@@ -111,12 +111,33 @@ function pancha_pakshi_calculator_shortcode_master() {
             cursor: pointer;
         }
 
-        .form-group label[for="auto_location"] {
+        .location-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .btn-auto-location {
+            padding: 8px 12px;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
             display: flex;
             align-items: center;
-            margin-bottom: 0;
-            font-weight: 500;
-            cursor: pointer;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .btn-auto-location:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-auto-location.active {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
         }
 
         /* Button Styling */
@@ -441,13 +462,18 @@ function pancha_pakshi_calculator_shortcode_master() {
             <div class="form-group">
                 <label for="birth_time">பிறந்த நேரம் / Birth Time:</label>
                 <input type="time" id="birth_time" name="birth_time" required>
-            </div>
-
-            <div class="form-group">
-                <label for="birth_place">பிறந்த ஊர் / Birth Place:</label>
-                <input type="text" id="birth_place" name="birth_place" placeholder="சென்னை, மதுரை, கோவை, திருச்சி" required>
-                <div id="autocomplete-suggestions" class="autocomplete-suggestions"></div>
-                <p class="info-text">ஆதரிக்கப்படும் முக்கிய நகரங்கள்: சென்னை, மதுரை, மும்பை, டெல்லி, கொல்கத்தா, பெங்களூரு, ஹைதராபாத். பிற நகரங்களுக்கு சென்னை கணக்கீடு பயன்படுத்தப்படும்.</p>
+                        <div class="form-group">
+                        <label for="birth_place">பிறந்த இடம் / Birth Place *</label>
+                        <input type="text" id="birth_place" name="birth_place" placeholder="e.g. Chennai" required>
+                        <div id="autocomplete-suggestions" class="autocomplete-suggestions"></div>
+                        <div class="location-controls">
+                            <button type="button" id="btn-auto-location" class="btn-auto-location">
+                                <span class="dashicons dashicons-location"></span> எனது இருப்பிடம் (Auto Location)
+                            </button>
+                        </div>
+                        <input type="hidden" id="birth_lat" name="birth_lat">
+                        <input type="hidden" id="birth_lon" name="birth_lon">
+                    </div>nfo-text">ஆதரிக்கப்படும் முக்கிய நகரங்கள்: சென்னை, மதுரை, மும்பை, டெல்லி, கொல்கத்தா, பெங்களூரு, ஹைதராபாத். பிற நகரங்களுக்கு சென்னை கணக்கீடு பயன்படுத்தப்படும்.</p>
             </div>
 
             <button type="submit" class="btn-calculate">கணக்கிடு / Calculate</button>
@@ -581,6 +607,8 @@ function pancha_pakshi_calculator_shortcode_master() {
                 const birth_date = $("#birth_date").val();
                 const birth_time = $("#birth_time").val();
                 const birth_place = $("#birth_place").val();
+                const birth_lat = $("#birth_lat").val();
+                const birth_lon = $("#birth_lon").val();
 
                 if (!name || !birth_date || !birth_time || !birth_place) {
                     showMessage("Please fill in all required fields.", "error");
@@ -599,6 +627,8 @@ function pancha_pakshi_calculator_shortcode_master() {
                         birth_date: birth_date,
                         birth_time: birth_time,
                         birth_place: birth_place,
+                        birth_lat: birth_lat,
+                        birth_lon: birth_lon,
                         security: "<?php echo wp_create_nonce("pancha_pakshi_nonce"); ?>"
                     },
                     success: function(response) {
@@ -645,6 +675,41 @@ function pancha_pakshi_calculator_shortcode_master() {
                 });
             });
 
+            // Auto Location Logic
+            $("#btn-auto-location").on("click", function() {
+                const btn = $(this);
+                if (!navigator.geolocation) {
+                    alert("Geolocation is not supported by your browser.");
+                    return;
+                }
+
+                btn.html("<span class=\"spinner-small\"></span> Detecting...").prop("disabled", true);
+
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        $("#birth_lat").val(lat);
+                        $("#birth_lon").val(lon);
+                        
+                        // Try to get city name via reverse geocoding (Nominatim - OpenStreetMap)
+                        $.getJSON(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`, function(data) {
+                            const city = data.address.city || data.address.town || data.address.village || data.address.suburb || "Detected Location";
+                            $("#birth_place").val(city);
+                            btn.addClass("active").html("<span class=\"dashicons dashicons-yes\"></span> Location Detected").prop("disabled", false);
+                        }).fail(function() {
+                            $("#birth_place").val("Detected Location (" + lat.toFixed(2) + ", " + lon.toFixed(2) + ")");
+                            btn.addClass("active").html("<span class=\"dashicons dashicons-yes\"></span> Location Detected").prop("disabled", false);
+                        });
+                    },
+                    function(error) {
+                        console.error("Geolocation error:", error);
+                        btn.html("<span class=\"dashicons dashicons-location\"></span> Auto Location Failed").prop("disabled", false);
+                        alert("Unable to detect location. Please enter it manually.");
+                    }
+                );
+            });
+
             function showMessage(msg, type) {
                 messageDiv.text(msg).addClass("pancha-pakshi-" + type).show();
             }
@@ -683,6 +748,8 @@ function pancha_pakshi_calculate_ajax_handler() {
     $birth_date = sanitize_text_field($_POST["birth_date"]);
     $birth_time = sanitize_text_field($_POST["birth_time"]);
     $birth_place = sanitize_text_field($_POST["birth_place"]);
+    $birth_lat = isset($_POST["birth_lat"]) ? sanitize_text_field($_POST["birth_lat"]) : "";
+    $birth_lon = isset($_POST["birth_lon"]) ? sanitize_text_field($_POST["birth_lon"]) : "";
 
     // Validate inputs (basic validation)
     if (empty($name) || empty($birth_date) || empty($birth_time) || empty($birth_place)) {
@@ -706,8 +773,10 @@ function pancha_pakshi_calculate_ajax_handler() {
     $escaped_birth_date = escapeshellarg($birth_date);
     $escaped_birth_time = escapeshellarg($birth_time);
     $escaped_birth_place = escapeshellarg($birth_place);
+    $escaped_lat = escapeshellarg($birth_lat);
+    $escaped_lon = escapeshellarg($birth_lon);
 
-    $command = "python3 " . $python_script_path . " " . $escaped_name . " " . $escaped_birth_date . " " . $escaped_birth_time . " " . $escaped_birth_place;
+    $command = "python3 " . $python_script_path . " " . $escaped_name . " " . $escaped_birth_date . " " . $escaped_birth_time . " " . $escaped_birth_place . " " . $escaped_lat . " " . $escaped_lon;
 
     $output = shell_exec($command . " 2>&1"); // Capture stderr as well
 
