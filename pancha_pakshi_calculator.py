@@ -3,6 +3,7 @@ import sys
 import json
 from datetime import datetime, timedelta
 import swisseph as swe
+import calendar
 
 # Nakshatra names in order
 nakshatras = [
@@ -147,16 +148,54 @@ def calculate_pancha_pakshi(birth_date, birth_time, birth_place, person_name, la
         sunrise_str = jd_to_local_str(tret_rise[0])
         sunset_str = jd_to_local_str(tret_set[0])
         
-        # Daily Pakshi Activities (Simplified placeholder)
-        # In a real Pancha Pakshi system, activities change by day of the week
-        # For now, keeping the structure compatible with existing UI
-        daily_table = {
-            'Vulture': {'J1': 'Eating', 'J2': 'Walking', 'J3': 'Ruling', 'J4': 'Sleeping', 'J5': 'Dying'},
-            'Owl': {'J1': 'Walking', 'J2': 'Ruling', 'J3': 'Sleeping', 'J4': 'Dying', 'J5': 'Eating'},
-            'Crow': {'J1': 'Ruling', 'J2': 'Sleeping', 'J3': 'Dying', 'J4': 'Eating', 'J5': 'Walking'},
-            'Cock': {'J1': 'Sleeping', 'J2': 'Dying', 'J3': 'Eating', 'J4': 'Walking', 'J5': 'Ruling'},
-            'Peacock': {'J1': 'Dying', 'J2': 'Eating', 'J3': 'Walking', 'J4': 'Ruling', 'J5': 'Sleeping'},
+        # Get day of week (0=Monday, 6=Sunday)
+        day_of_week = dt_local.weekday()
+        
+        # Activity mapping for Shukla Paksha (Waxing)
+        # Order of activities for each day: Eating, Walking, Ruling, Sleeping, Dying
+        # Day: Sun=0, Mon=1, Tue=2, Wed=3, Thu=4, Fri=5, Sat=6
+        # Birds: Vulture, Owl, Crow, Cock, Peacock
+        
+        birds = ['Vulture', 'Owl', 'Crow', 'Cock', 'Peacock']
+        
+        # Shukla Paksha Day-wise sequence (Standard Vedic)
+        # Weekday: Mon=0, Tue=1, Wed=2, Thu=3, Fri=4, Sat=5, Sun=6
+        shukla_day_order = {
+            6: [0, 1, 2, 3, 4], # Sunday: V, O, Cr, Co, P
+            0: [1, 2, 3, 4, 0], # Monday: O, Cr, Co, P, V
+            1: [2, 3, 4, 0, 1], # Tuesday: Cr, Co, P, V, O
+            2: [3, 4, 0, 1, 2], # Wednesday: Co, P, V, O, Cr
+            3: [4, 0, 1, 2, 3], # Thursday: P, V, O, Cr, Co
+            4: [0, 1, 2, 3, 4], # Friday: V, O, Cr, Co, P
+            5: [1, 2, 3, 4, 0], # Saturday: O, Cr, Co, P, V
         }
+        
+        # Krishna Paksha Day-wise sequence (Standard Vedic)
+        krishna_day_order = {
+            6: [3, 4, 0, 1, 2], # Sunday: Co, P, V, O, Cr
+            0: [4, 0, 1, 2, 3], # Monday: P, V, O, Cr, Co
+            1: [0, 1, 2, 3, 4], # Tuesday: V, O, Cr, Co, P
+            2: [1, 2, 3, 4, 0], # Wednesday: O, Cr, Co, P, V
+            3: [2, 3, 4, 0, 1], # Thursday: Cr, Co, P, V, O
+            4: [3, 4, 0, 1, 2], # Friday: Co, P, V, O, Cr
+            5: [4, 0, 1, 2, 3], # Saturday: P, V, O, Cr, Co
+        }
+        
+        order_map = shukla_day_order if paksha == 'shukla' else krishna_day_order
+        today_order = order_map.get(day_of_week, [0, 1, 2, 3, 4])
+        
+        activities = ['Eating', 'Walking', 'Ruling', 'Sleeping', 'Dying']
+        tamil_activities = ['ஊண் (Eating)', 'நடை (Walking)', 'அரசு (Ruling)', 'துயில் (Sleeping)', 'சாவு (Dying)']
+        
+        daily_table = {}
+        for i, bird_idx in enumerate(today_order):
+            bird_name = birds[bird_idx]
+            # Rotate activities based on position
+            bird_activities = {}
+            for j in range(5):
+                act_idx = (i + j) % 5
+                bird_activities[f'J{j+1}'] = tamil_activities[act_idx]
+            daily_table[bird_name] = bird_activities
         
         result = {
             'success': True,

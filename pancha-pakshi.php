@@ -786,6 +786,10 @@ function pancha_pakshi_calculate_ajax_handler() {
 
     $output = shell_exec($command . " 2>&1"); // Capture stderr as well
 
+    if (strpos($output, "ModuleNotFoundError: No module named 'swisseph'") !== false) {
+        wp_send_json_error("Server Configuration Error: The 'pyswisseph' Python library is not installed. Please run 'pip3 install pyswisseph' on the server.");
+    }
+
     $result = json_decode($output, true);
 
     if (json_last_error() === JSON_ERROR_NONE && isset($result["janma_pakshi"])) {
