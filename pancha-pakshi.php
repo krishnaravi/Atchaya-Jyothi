@@ -782,23 +782,49 @@ function pancha_pakshi_calculate_ajax_handler() {
     $escaped_lat = escapeshellarg($birth_lat);
     $escaped_lon = escapeshellarg($birth_lon);
 
-    $command = "python3 " . $python_script_path . " " . $escaped_name . " " . $escaped_birth_date . " " . $escaped_birth_time . " " . $escaped_birth_place . " " . $escaped_lat . " " . $escaped_lon;
+    // Try multiple python3 paths to be sure
+    $python_paths = array("/usr/bin/python3", "/usr/local/bin/python3", "python3");
+    $output = "";
+    $success = false;
 
-    $output = shell_exec($command . " 2>&1"); // Capture stderr as well
-
-    if (strpos($output, "ModuleNotFoundError: No module named 'swisseph'") !== false) {
-        wp_send_json_error("Server Configuration Error: The 'pyswisseph' Python library is not installed. Please run 'pip3 install pyswisseph' on the server.");
+    foreach ($python_paths as $python_cmd) {
+        $command = $python_cmd . " " . $python_script_path . " " . $escaped_name . " " . $escaped_birth_date . " " . $escaped_birth_time . " " . $escaped_birth_place . " " . $escaped_lat . " " . $escaped_lon . " 2>&1";
+        $output = shell_exec($command);
+        
+        $result = json_decode($output, true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            if (isset($result["success"]) && $result["success"] === false) {
+                if (strpos($result["data"], "swisseph") !== false) {
+                    wp_send_json_error("Server Configuration Error: The 'pyswisseph' Python library is not installed. Please run 'sudo pip3 install pyswisseph' on the server.");
+                } else {
+                    wp_send_json_error("Python Error: " . $result["data"]);
+                }
+                return;
+            }
+            if (isset($result["janma_pakshi"])) {
+                wp_send_json_success($result);
+                return;
+            }
+        }
+        
+        if (strpos($output, "ModuleNotFoundError: No module named 'swisseph'") !== false) {
+            wp_send_json_error("Server Configuration Error: The 'pyswisseph' Python library is not installed. Please run 'sudo pip3 install pyswisseph' on the server. (Error: " . trim($output) . ")");
+            return;
+        }
     }
 
-    $result = json_decode($output, true);
-
-    if (json_last_error() === JSON_ERROR_NONE && isset($result["janma_pakshi"])) {
-        wp_send_json_success($result);
+    // If we reach here, all attempts failed
+    error_log("Pancha Pakshi Error - Command: " . $command);
+    error_log("Pancha Pakshi Error - Raw Output: " . $output);
+    
+    $error_msg = "Calculation failed. ";
+    if (empty($output)) {
+        $error_msg .= "The server returned no output. This might be due to shell_exec being disabled or a permissions issue.";
     } else {
-        // Log the raw output for debugging
-        error_log("Pancha Pakshi Python Script Output: " . $output);
-        wp_send_json_error("Calculation failed. Raw output: " . $output);
+        $error_msg .= "Raw output: " . $output;
     }
+    
+    wp_send_json_error($error_msg);
 }
 add_action("wp_ajax_pancha_pakshi_calculate", "pancha_pakshi_calculate_ajax_handler");
 add_action("wp_ajax_nopriv_pancha_pakshi_calculate", "pancha_pakshi_calculate_ajax_handler");

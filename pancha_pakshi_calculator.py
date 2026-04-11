@@ -2,8 +2,13 @@
 import sys
 import json
 from datetime import datetime, timedelta
-import swisseph as swe
 import calendar
+
+try:
+    import swisseph as swe
+except ImportError:
+    print(json.dumps({"success": False, "data": "ModuleNotFoundError: No module named 'swisseph'"}))
+    sys.exit(1)
 
 # Nakshatra names in order
 nakshatras = [
