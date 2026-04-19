@@ -1,19 +1,65 @@
-.atchaya-panchang { max-width: 1200px; margin: 20px auto; font-family: 'Noto Sans Tamil', system-ui, sans-serif; background: #fffaf0; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); overflow: hidden; }
+.atchaya-panchang { max-width: 1200px; margin: 20px auto; font-family: 'Noto Sans Tamil', system-ui, sans-serif; background: #fffaf0; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.12); overflow: hidden; color: #333; }
 .atchaya-header { background: linear-gradient(135deg, #0a3d62, #f39c12); color: white; padding: 30px; text-align: center; }
-.atchaya-header h1 { margin: 0; font-size: 2.3em; }
-.blue-banner { background: #0a3d62; color: white; padding: 14px; text-align: center; font-weight: bold; font-size: 1.45em; }
-.section { padding: 25px; margin: 20px; background: white; border: 1px solid #f0d9b5; border-radius: 12px; }
-table { width: 100%; border-collapse: collapse; }
-th { background: #f39c12; color: white; padding: 12px; }
-td { border: 1px solid #d4a017; padding: 12px; text-align: center; }
-.rasi-chart { text-align: center; font-size: 2.4em; padding: 40px; border: 4px double #c0392b; background: #fffaf0; border-radius: 12px; }
+.atchaya-header h1 { margin: 0; font-size: 2.3em; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+.blue-banner { background: #0a3d62; color: white; padding: 14px; text-align: center; font-weight: bold; font-size: 1.2em; border-radius: 8px; margin-bottom: 15px; }
+.section { padding: 20px; margin: 15px; background: white; border: 1px solid #f0d9b5; border-radius: 12px; }
+.section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 15px; }
+.panchang-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; padding: 15px; }
+.info-card { background: #fff; border: 1px solid #d4a017; padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+.info-card h3 { margin: 0 0 10px; color: #0a3d62; font-size: 1.1em; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+.main-val { font-weight: bold; font-size: 1.2em; color: #c0392b; }
 
-/* Additional Styling for better look */
-.panchang-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; padding: 20px; }
-.info-card { background: white; border-radius: 10px; border-left: 5px solid #0a3d62; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; }
-.info-card h3 { color: #0a3d62; margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 5px; font-size: 1.2em; }
-.time-value { font-weight: bold; color: #c0392b; }
-.tamil-text { font-family: 'Noto Sans Tamil', serif; }
-.rasi-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); gap: 2px; background: #d4a017; border: 2px solid #d4a017; width: 400px; height: 400px; margin: 0 auto; }
-.rasi-box { background: #fffaf0; display: flex; align-items: center; justify-content: center; font-size: 0.9em; text-align: center; padding: 5px; }
-.rasi-center { grid-column: 2 / 4; grid-row: 2 / 4; background: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.5em; color: #0a3d62; }
+.panchang-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+.panchang-table th { background: #f39c12; color: white; padding: 12px; text-align: left; }
+.panchang-table td { border: 1px solid #f0d9b5; padding: 10px; }
+.panchang-table tr:nth-child(even) { background: #fffaf0; }
+
+.rasi-section { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
+@media (max-width: 800px) { .rasi-section, .section-grid { grid-template-columns: 1fr; } }
+
+.rasi-grid { 
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    grid-template-rows: repeat(4, 1fr); 
+    gap: 0; 
+    border: 2px solid #0a3d62; 
+    background: #fff;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+}
+.rasi-box { 
+    border: 1px solid #0a3d62; 
+    display: flex; 
+    flex-direction: column; 
+    padding: 5px; 
+    position: relative;
+    min-height: 80px;
+}
+.rasi-box span { font-size: 0.8em; color: #999; position: absolute; top: 2px; left: 5px; }
+.rasi-box .planets { 
+    display: flex; 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100%; 
+    font-weight: bold; 
+    color: #c0392b;
+    font-size: 1.1em;
+    text-align: center;
+}
+.rasi-center { 
+    grid-column: 2 / 4; 
+    grid-row: 2 / 4; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    background: #f0d9b5; 
+    font-weight: bold; 
+    font-size: 1.5em; 
+    color: #0a3d62;
+    text-align: center;
+    border: 1px solid #0a3d62;
+}
+
+#cityInput { width: 100%; padding: 12px; border: 1px solid #d4a017; border-radius: 8px; font-size: 1em; }
+.date-picker, .lang-selector { width: 100%; padding: 10px; border: 1px solid #d4a017; border-radius: 8px; }
