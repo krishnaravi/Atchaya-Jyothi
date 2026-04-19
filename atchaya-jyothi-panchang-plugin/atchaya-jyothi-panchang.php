@@ -3,7 +3,7 @@
  * Plugin Name:       AtchayaJyothi - அட்சயஜோதி தின பஞ்சாங்கம்
  * Plugin URI:        https://krishnalaya.cloud
  * Description:       Full Dynamic Tamil Panchangam with Swiss Ephemeris / Prokerala API support. Includes Tithi, Nakshatra, Yoga, Karana, Gowri, Rahu Kalam, Pancha Pakshi, South Indian Rasi Chart & more. Perfect for Krishnalaya.Cloud.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Author:            Krishnalaya.Cloud (with Grok)
  * Author URI:        https://krishnalaya.cloud
  * License:           GPL-2.0+
@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
-define('ATCHAYA_VERSION', '1.0.1');
+define('ATCHAYA_VERSION', '1.0.2');
 define('ATCHAYA_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ATCHAYA_PLUGIN_URL', plugin_dir_url(__FILE__));
 

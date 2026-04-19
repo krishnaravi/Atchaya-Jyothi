@@ -16,7 +16,8 @@ class Atchaya_Panchang_Calculator {
         
         // Execute the Python script to get astronomical data
         $input = json_encode(['date' => $date]);
-        $command = "python3 /home/ubuntu/panchang_calc.py " . escapeshellarg($input);
+        $script_path = dirname(__FILE__) . '/panchang_calc.py';
+        $command = "python3 " . escapeshellarg($script_path) . " " . escapeshellarg($input);
         $output = shell_exec($command);
         $astro_data = json_decode($output, true);
         
