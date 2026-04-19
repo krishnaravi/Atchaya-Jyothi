@@ -1,0 +1,64 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: AtchayaJyothi - அட்சயஜோதி தின பஞ்சாங்கம் 1.0.0\n"
+"Report-Msgid-Bugs-To: https://krishnalaya.cloud\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Tamil <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2023-10-27 10:00+0000\n"
+"PO-Revision-Date: 2023-10-27 10:00+0000\n"
+"X-Generator: Poedit 3.0.1\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: includes\n"
+"X-Poedit-SearchPath-2: templates\n"
+"Language: ta\n"
+
+msgid "AtchayaJyothi - அட்சயஜோதி தின பஞ்சாங்கம்"
+msgstr "அட்சயஜோதி - தின பஞ்சாங்கம்"
+
+msgid "Full Dynamic Tamil Panchangam with Swiss Ephemeris / Prokerala API support. Includes Tithi, Nakshatra, Yoga, Karana, Gowri, Rahu Kalam, Pancha Pakshi, South Indian Rasi Chart & more. Perfect for Krishnalaya.Cloud."
+msgstr "சுவிஸ் எபிமெரிஸ் / ப்ரோகேரளா API ஆதரவுடன் முழுமையான தமிழ் தின பஞ்சாங்கம். திதி, நட்சத்திரம், யோகம், கரணம், கௌரி, ராகு காலம், பஞ்ச பட்சி, தென் இந்திய ராசி கட்டம் மற்றும் பலவற்றை உள்ளடக்கியது. Krishnalaya.Cloud க்கு ஏற்றது."
+
+msgid "திதி (Tithi)"
+msgstr "திதி"
+
+msgid "நட்சத்திரம் (Nakshatra)"
+msgstr "நட்சத்திரம்"
+
+msgid "யோகம் (Yoga)"
+msgstr "யோகம்"
+
+msgid "கரணம் (Karana)"
+msgstr "கரணம்"
+
+msgid "முக்கிய நேரங்கள் (Auspicious & Inauspicious Times)"
+msgstr "முக்கிய நேரங்கள்"
+
+msgid "சூரிய உதயம் (Sunrise)"
+msgstr "சூரிய உதயம்"
+
+msgid "சூரிய அஸ்தமனம் (Sunset)"
+msgstr "சூரிய அஸ்தமனம்"
+
+msgid "ராகு காலம் (Rahu Kalam)"
+msgstr "ராகு காலம்"
+
+msgid "குளிகை காலம் (Gulika Kalam)"
+msgstr "குளிகை காலம்"
+
+msgid "எமகண்டம் (Yamagandam)"
+msgstr "எமகண்டம்"
+
+msgid "ராசி கட்டம் (Rasi Chart)"
+msgstr "ராசி கட்டம்"
+
+msgid "ராசி"
+msgstr "ராசி"
+
+msgid "Error: Panchang data not found."
+msgstr "பிழை: பஞ்சாங்க தரவு கிடைக்கவில்லை."
