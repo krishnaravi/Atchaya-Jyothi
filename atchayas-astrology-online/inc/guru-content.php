@@ -100,6 +100,30 @@ function atchaya_guru_title() {
 }
 
 /**
+ * Get guru photo URL (Customizer upload, then bundled theme image).
+ *
+ * @return string Empty if no photo available.
+ */
+function atchaya_guru_photo_url() {
+	$custom = atchaya_get_option( 'guru_photo' );
+	if ( $custom ) {
+		return $custom;
+	}
+
+	$bundled = ATCHAYA_THEME_DIR . '/assets/images/guru-ravichandran.jpg';
+	if ( file_exists( $bundled ) ) {
+		return ATCHAYA_THEME_URI . '/assets/images/guru-ravichandran.jpg';
+	}
+
+	$bundled_png = ATCHAYA_THEME_DIR . '/assets/images/guru-ravichandran.png';
+	if ( file_exists( $bundled_png ) ) {
+		return ATCHAYA_THEME_URI . '/assets/images/guru-ravichandran.png';
+	}
+
+	return '';
+}
+
+/**
  * Get guru short bio for cards.
  *
  * @return string

@@ -23,7 +23,17 @@ function atchaya_customize_register( $wp_customize ) {
 		'sanitize_callback' => 'sanitize_text_field',
 	) );
 	$wp_customize->add_control( 'atchaya_guru_name', array(
-		'label'   => __( 'Guru Name', 'atchayas-astrology' ),
+		'label'   => __( 'Guru Name (English)', 'atchayas-astrology' ),
+		'section' => 'atchaya_academy',
+		'type'    => 'text',
+	) );
+
+	$wp_customize->add_setting( 'atchaya_guru_name_ta', array(
+		'default'           => 'ஜோதிடர் ரவிச்சந்திரன்',
+		'sanitize_callback' => 'sanitize_text_field',
+	) );
+	$wp_customize->add_control( 'atchaya_guru_name_ta', array(
+		'label'   => __( 'Guru Name (Tamil)', 'atchayas-astrology' ),
 		'section' => 'atchaya_academy',
 		'type'    => 'text',
 	) );
@@ -33,7 +43,17 @@ function atchaya_customize_register( $wp_customize ) {
 		'sanitize_callback' => 'sanitize_text_field',
 	) );
 	$wp_customize->add_control( 'atchaya_guru_title', array(
-		'label'   => __( 'Guru Title / Role', 'atchayas-astrology' ),
+		'label'   => __( 'Guru Title (English)', 'atchayas-astrology' ),
+		'section' => 'atchaya_academy',
+		'type'    => 'text',
+	) );
+
+	$wp_customize->add_setting( 'atchaya_guru_title_ta', array(
+		'default'           => 'நிறுவனர் & முதன்மைப் பயிற்றுவிப்பாளர்',
+		'sanitize_callback' => 'sanitize_text_field',
+	) );
+	$wp_customize->add_control( 'atchaya_guru_title_ta', array(
+		'label'   => __( 'Guru Title (Tamil)', 'atchayas-astrology' ),
 		'section' => 'atchaya_academy',
 		'type'    => 'text',
 	) );

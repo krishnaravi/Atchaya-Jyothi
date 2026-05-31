@@ -14,7 +14,7 @@ $blocks = atchaya_about_content_blocks();
 		<div class="about-page-hero-grid">
 			<div class="about-page-photo">
 				<?php
-				$guru_photo = atchaya_get_option( 'guru_photo' );
+				$guru_photo = atchaya_guru_photo_url();
 				if ( $guru_photo ) :
 					?>
 					<img src="<?php echo esc_url( $guru_photo ); ?>" alt="<?php echo esc_attr( atchaya_guru_name() ); ?>" loading="lazy">

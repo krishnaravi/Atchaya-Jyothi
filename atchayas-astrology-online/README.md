@@ -107,7 +107,19 @@ For full content translation (pages, courses), use **Polylang** or **WPML** alon
 
 **Founder & Lead Instructor:** Astrologer Ravichandran (ஜோதிடர் ரவிச்சந்திரன்)
 
-Default bios and About page content are built into the theme. Upload guru photo via **Customize → Academy Settings**.
+Default bios and About page content are built into the theme.
+
+### Guru photo (Ravichandran)
+
+**Option A — WordPress Customizer (recommended):**
+1. **Appearance → Customize → Academy Settings → Guru Photo**
+2. Upload the portrait photo you shared
+
+**Option B — Bundled theme file:**
+Save the photo as:
+`assets/images/guru-ravichandran.jpg` (or `.png`)
+
+The theme will use it automatically on the homepage and About page.
 
 Use the **About Guru Page** template on your `/about/` page for the full profile (journey, mission, student promise).
 
