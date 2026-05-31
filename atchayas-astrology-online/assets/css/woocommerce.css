@@ -1,0 +1,170 @@
+/**
+ * WooCommerce overrides — Atchaya's Astrology Online
+ */
+
+.atchaya-woocommerce-wrap {
+	padding: 3rem 0 4rem;
+}
+
+.woocommerce .woocommerce-breadcrumb {
+	margin-bottom: 1.5rem;
+	color: var(--atchaya-text-muted);
+}
+
+.woocommerce .woocommerce-breadcrumb a {
+	color: var(--atchaya-blue);
+}
+
+.woocommerce span.onsale {
+	background: var(--atchaya-gold);
+	color: var(--atchaya-blue-dark);
+	border-radius: 999px;
+	font-weight: 700;
+	min-height: auto;
+	min-width: auto;
+	padding: 0.35rem 0.75rem;
+	line-height: 1.2;
+}
+
+.woocommerce ul.products {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+	gap: 1.5rem;
+}
+
+.woocommerce ul.products li.product {
+	background: var(--atchaya-white);
+	border-radius: var(--atchaya-radius);
+	border: 1px solid var(--atchaya-cream-dark);
+	box-shadow: var(--atchaya-shadow-sm);
+	padding: 1rem;
+	margin: 0 !important;
+	width: 100% !important;
+	transition: var(--atchaya-transition);
+}
+
+.woocommerce ul.products li.product:hover {
+	box-shadow: var(--atchaya-shadow);
+	transform: translateY(-4px);
+}
+
+.woocommerce ul.products li.product .woocommerce-loop-product__title {
+	color: var(--atchaya-blue);
+	font-family: var(--atchaya-font-display);
+}
+
+.woocommerce ul.products li.product .price {
+	color: var(--atchaya-gold-dark);
+	font-weight: 700;
+}
+
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button,
+.woocommerce #respond input#submit {
+	background: var(--atchaya-blue) !important;
+	color: var(--atchaya-white) !important;
+	border-radius: 999px !important;
+	font-weight: 600 !important;
+	padding: 0.75rem 1.5rem !important;
+	transition: var(--atchaya-transition) !important;
+}
+
+.woocommerce a.button:hover,
+.woocommerce button.button:hover,
+.woocommerce input.button:hover {
+	background: var(--atchaya-blue-dark) !important;
+	color: var(--atchaya-white) !important;
+}
+
+.woocommerce a.button.alt,
+.woocommerce button.button.alt {
+	background: var(--atchaya-gold) !important;
+	color: var(--atchaya-blue-dark) !important;
+}
+
+.woocommerce-cart .cart-collaterals,
+.woocommerce-checkout .col2-set {
+	background: var(--atchaya-white);
+	border-radius: var(--atchaya-radius);
+	padding: 1.5rem;
+	border: 1px solid var(--atchaya-cream-dark);
+}
+
+.woocommerce form .form-row input.input-text,
+.woocommerce form .form-row textarea,
+.woocommerce form .form-row select {
+	border-radius: 8px;
+	border-color: var(--atchaya-cream-dark);
+	padding: 0.75rem 1rem;
+}
+
+.woocommerce form .form-row input.input-text:focus,
+.woocommerce form .form-row textarea:focus {
+	border-color: var(--atchaya-gold);
+	box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.15);
+	outline: none;
+}
+
+.woocommerce-message,
+.woocommerce-info {
+	border-top-color: var(--atchaya-gold);
+	background: var(--atchaya-cream);
+}
+
+.woocommerce-error {
+	border-top-color: var(--atchaya-danger);
+}
+
+.woocommerce table.shop_table {
+	border-radius: var(--atchaya-radius);
+	overflow: hidden;
+	border: 1px solid var(--atchaya-cream-dark);
+}
+
+.woocommerce table.shop_table th {
+	background: var(--atchaya-blue);
+	color: var(--atchaya-white);
+}
+
+.woocommerce table.shop_table td {
+	border-color: var(--atchaya-cream-dark);
+}
+
+.woocommerce-MyAccount-navigation {
+	background: var(--atchaya-blue);
+	border-radius: var(--atchaya-radius);
+	padding: 1rem;
+}
+
+.woocommerce-MyAccount-navigation ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.woocommerce-MyAccount-navigation a {
+	color: rgba(255,255,255,0.85);
+	display: block;
+	padding: 0.5rem 0.75rem;
+	border-radius: 6px;
+}
+
+.woocommerce-MyAccount-navigation li.is-active a,
+.woocommerce-MyAccount-navigation a:hover {
+	background: rgba(243, 156, 18, 0.2);
+	color: var(--atchaya-gold);
+}
+
+.woocommerce-MyAccount-content {
+	background: var(--atchaya-white);
+	border-radius: var(--atchaya-radius);
+	padding: 1.5rem;
+	border: 1px solid var(--atchaya-cream-dark);
+}
+
+@media (max-width: 768px) {
+	.woocommerce ul.products {
+		grid-template-columns: 1fr;
+	}
+}
