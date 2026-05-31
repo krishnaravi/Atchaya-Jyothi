@@ -1,0 +1,187 @@
+/**
+ * Tutor LMS overrides — Atchaya's Astrology Online
+ */
+
+/* Course archive */
+.tutor-wrap,
+.tutor-course-archive-page,
+.tutor-single-course-wrap {
+	font-family: var(--atchaya-font);
+}
+
+.tutor-course-archive-page .tutor-course-header,
+.tutor-page-wrap .tutor-container {
+	max-width: var(--atchaya-container);
+}
+
+.tutor-course-list {
+	display: grid !important;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+	gap: 1.5rem !important;
+}
+
+.tutor-card {
+	border-radius: var(--atchaya-radius-lg) !important;
+	border: 1px solid var(--atchaya-cream-dark) !important;
+	box-shadow: var(--atchaya-shadow-sm) !important;
+	overflow: hidden;
+	transition: all var(--atchaya-transition) !important;
+	background: var(--atchaya-white) !important;
+}
+
+.tutor-card:hover {
+	transform: translateY(-6px);
+	box-shadow: var(--atchaya-shadow) !important;
+}
+
+.tutor-card-image-top .tutor-card-image {
+	border-radius: 0 !important;
+}
+
+.tutor-course-name a {
+	color: var(--atchaya-blue) !important;
+	font-family: var(--atchaya-font-display) !important;
+	font-weight: 600 !important;
+}
+
+.tutor-course-name a:hover {
+	color: var(--atchaya-gold-dark) !important;
+}
+
+.tutor-meta,
+.tutor-course-ratings {
+	color: var(--atchaya-text-muted) !important;
+}
+
+.tutor-btn,
+.tutor-button,
+button.tutor-btn,
+a.tutor-btn {
+	border-radius: 999px !important;
+	font-weight: 600 !important;
+	transition: all var(--atchaya-transition) !important;
+}
+
+.tutor-btn-primary,
+.tutor-button-primary {
+	background: var(--atchaya-blue) !important;
+	border-color: var(--atchaya-blue) !important;
+}
+
+.tutor-btn-primary:hover,
+.tutor-button-primary:hover {
+	background: var(--atchaya-blue-dark) !important;
+}
+
+.tutor-btn-outline-primary {
+	color: var(--atchaya-blue) !important;
+	border-color: var(--atchaya-blue) !important;
+}
+
+/* Single course */
+.tutor-single-course-sidebar .tutor-sidebar-card {
+	border-radius: var(--atchaya-radius) !important;
+	border: 1px solid var(--atchaya-cream-dark) !important;
+	box-shadow: var(--atchaya-shadow-sm) !important;
+}
+
+.tutor-single-course-sidebar .tutor-course-price {
+	color: var(--atchaya-gold-dark) !important;
+	font-family: var(--atchaya-font-display) !important;
+	font-size: 1.75rem !important;
+}
+
+.tutor-course-topics-header,
+.tutor-course-content-title {
+	color: var(--atchaya-blue) !important;
+	font-family: var(--atchaya-font-display) !important;
+}
+
+.tutor-accordion-item-header {
+	background: var(--atchaya-cream) !important;
+	border-color: var(--atchaya-cream-dark) !important;
+}
+
+.tutor-accordion-item-header.is-active {
+	background: var(--atchaya-blue) !important;
+	color: var(--atchaya-white) !important;
+}
+
+/* Dashboard */
+body.atchaya-tutor-dashboard {
+	background: var(--atchaya-cream);
+}
+
+.tutor-dashboard .tutor-dashboard-menu {
+	background: var(--atchaya-blue) !important;
+	border-radius: var(--atchaya-radius) !important;
+}
+
+.tutor-dashboard-menu-item a {
+	color: rgba(255,255,255,0.85) !important;
+}
+
+.tutor-dashboard-menu-item.active a,
+.tutor-dashboard-menu-item a:hover {
+	background: rgba(243, 156, 18, 0.2) !important;
+	color: var(--atchaya-gold) !important;
+}
+
+.tutor-dashboard-content {
+	background: var(--atchaya-white) !important;
+	border-radius: var(--atchaya-radius) !important;
+	border: 1px solid var(--atchaya-cream-dark) !important;
+	box-shadow: var(--atchaya-shadow-sm) !important;
+	padding: 1.5rem !important;
+}
+
+.tutor-dashboard-content h2,
+.tutor-dashboard-content h3 {
+	color: var(--atchaya-blue) !important;
+	font-family: var(--atchaya-font-display) !important;
+}
+
+/* Lesson player */
+.tutor-lesson-wrapper {
+	background: var(--atchaya-cream) !important;
+}
+
+.tutor-lesson-sidebar {
+	background: var(--atchaya-white) !important;
+	border-color: var(--atchaya-cream-dark) !important;
+}
+
+.tutor-lesson-sidebar .tutor-sidebar-item.active {
+	background: rgba(10, 61, 98, 0.08) !important;
+	border-left: 3px solid var(--atchaya-gold) !important;
+}
+
+/* Progress bar */
+.tutor-progress-bar .tutor-progress-value {
+	background: var(--atchaya-gold) !important;
+}
+
+.tutor-progress-bar .tutor-progress-bar {
+	background: var(--atchaya-cream-dark) !important;
+}
+
+/* Login / registration forms on Tutor pages */
+.tutor-form-group input,
+.tutor-form-group select,
+.tutor-form-group textarea {
+	border-radius: 8px !important;
+	border-color: var(--atchaya-cream-dark) !important;
+}
+
+.tutor-form-group input:focus,
+.tutor-form-group select:focus,
+.tutor-form-group textarea:focus {
+	border-color: var(--atchaya-gold) !important;
+	box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.15) !important;
+}
+
+@media (max-width: 768px) {
+	.tutor-course-list {
+		grid-template-columns: 1fr !important;
+	}
+}

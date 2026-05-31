@@ -1,0 +1,12 @@
+/* Block editor styles matching frontend */
+body {
+	font-family: 'Source Sans 3', 'Noto Sans Tamil', system-ui, sans-serif;
+	color: #2c3e50;
+}
+
+.editor-styles-wrapper h1,
+.editor-styles-wrapper h2,
+.editor-styles-wrapper h3 {
+	font-family: 'Cormorant Garamond', Georgia, serif;
+	color: #0a3d62;
+}
