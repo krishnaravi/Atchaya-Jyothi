@@ -5,11 +5,10 @@
  * @package Atchayas_Astrology
  */
 
-$guru_name  = atchaya_get_option( 'guru_name', 'Krishna' );
+$guru_name  = atchaya_guru_name();
+$guru_title = atchaya_guru_title();
 $guru_photo = atchaya_get_option( 'guru_photo' );
-$bio_en     = atchaya_get_option( 'guru_bio_en' );
-$bio_ta     = atchaya_get_option( 'guru_bio_ta' );
-$bio        = atchaya_t( $bio_en, $bio_ta );
+$bio        = atchaya_guru_bio_short();
 ?>
 <aside class="guru-card">
 	<div class="guru-photo-wrap">
@@ -22,15 +21,14 @@ $bio        = atchaya_t( $bio_en, $bio_ta );
 		<?php endif; ?>
 	</div>
 	<div class="guru-info">
-		<p class="guru-label"><?php echo esc_html( atchaya_str( 'meet_guru' ) ); ?></p>
+		<p class="guru-label"><?php echo esc_html( $guru_title ); ?></p>
 		<h3><?php echo esc_html( $guru_name ); ?></h3>
-		<?php if ( $bio ) : ?>
-			<p><?php echo wp_kses_post( wpautop( $bio ) ); ?></p>
-		<?php else : ?>
-			<p><?php echo esc_html( atchaya_t(
-				'Experienced Vedic astrologer guiding students through authentic Jyotish traditions.',
-				'அனுபவம் வாய்ந்த வேத ஜோதிடர் — பாரம்பரிய ஜோதிடத்தின் வழியாக மாணவர்களுக்கு வழிகாட்டுதல்.'
-			) ); ?></p>
-		<?php endif; ?>
+		<blockquote class="guru-quote guru-quote-sm">
+			<p>&ldquo;<?php echo esc_html( atchaya_guru_short_quote() ); ?>&rdquo;</p>
+		</blockquote>
+		<p><?php echo wp_kses_post( wpautop( $bio ) ); ?></p>
+		<a href="<?php echo esc_url( home_url( '/about/' ) ); ?>" class="guru-more-link">
+			<?php echo esc_html( atchaya_str( 'learn_more' ) ); ?> &rarr;
+		</a>
 	</div>
 </aside>

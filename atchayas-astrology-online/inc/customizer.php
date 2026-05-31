@@ -19,7 +19,7 @@ function atchaya_customize_register( $wp_customize ) {
 	) );
 
 	$wp_customize->add_setting( 'atchaya_guru_name', array(
-		'default'           => 'Krishna',
+		'default'           => 'Astrologer Ravichandran',
 		'sanitize_callback' => 'sanitize_text_field',
 	) );
 	$wp_customize->add_control( 'atchaya_guru_name', array(
@@ -28,8 +28,18 @@ function atchaya_customize_register( $wp_customize ) {
 		'type'    => 'text',
 	) );
 
+	$wp_customize->add_setting( 'atchaya_guru_title', array(
+		'default'           => 'Founder & Lead Instructor',
+		'sanitize_callback' => 'sanitize_text_field',
+	) );
+	$wp_customize->add_control( 'atchaya_guru_title', array(
+		'label'   => __( 'Guru Title / Role', 'atchayas-astrology' ),
+		'section' => 'atchaya_academy',
+		'type'    => 'text',
+	) );
+
 	$wp_customize->add_setting( 'atchaya_guru_bio_en', array(
-		'default'           => '',
+		'default'           => 'Founder of Atchaya\'s Astrology Online with years of deep Jyotish research and precise predictions. He teaches timeless Vedic methods in clear Tamil and English.',
 		'sanitize_callback' => 'wp_kses_post',
 	) );
 	$wp_customize->add_control( 'atchaya_guru_bio_en', array(
@@ -39,7 +49,7 @@ function atchaya_customize_register( $wp_customize ) {
 	) );
 
 	$wp_customize->add_setting( 'atchaya_guru_bio_ta', array(
-		'default'           => '',
+		'default'           => 'பல ஆண்டுகால ஆழ்ந்த ஜோதிட ஆராய்ச்சி மற்றும் துல்லியமான கணிப்புகளில் அனுபவம் பெற்ற நிறுவனர். தொன்மையான வேத ஜோதிட முறைகளை எளிய தமிழ் மற்றும் ஆங்கிலத்தில் கற்பிப்பதில் வல்லவர்.',
 		'sanitize_callback' => 'wp_kses_post',
 	) );
 	$wp_customize->add_control( 'atchaya_guru_bio_ta', array(

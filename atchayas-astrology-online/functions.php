@@ -16,6 +16,8 @@ require_once ATCHAYA_THEME_DIR . '/inc/bilingual.php';
 require_once ATCHAYA_THEME_DIR . '/inc/tutor-lms.php';
 require_once ATCHAYA_THEME_DIR . '/inc/woocommerce.php';
 require_once ATCHAYA_THEME_DIR . '/inc/customizer.php';
+require_once ATCHAYA_THEME_DIR . '/inc/guru-content.php';
+require_once ATCHAYA_THEME_DIR . '/inc/payments.php';
 
 /**
  * Enqueue scripts and styles.

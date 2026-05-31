@@ -48,7 +48,7 @@ Premium bilingual (Tamil / English) WordPress theme for **Atchaya's Astrology On
 | Page | Slug | Template |
 |------|------|----------|
 | Home | `/` | Front Page (automatic) |
-| About | `/about/` | Default |
+| About | `/about/` | **About Guru Page** |
 | Courses | `/courses/` | Tutor LMS archive |
 | Blog | `/blog/` | Posts page |
 | Panchang | `/panchang/` | **Panchang Page** |
@@ -103,11 +103,35 @@ The theme includes a built-in EN / தமிழ் switcher in the header. UI st
 
 For full content translation (pages, courses), use **Polylang** or **WPML** alongside this theme.
 
+## Guru Profile (Pre-configured)
+
+**Founder & Lead Instructor:** Astrologer Ravichandran (ஜோதிடர் ரவிச்சந்திரன்)
+
+Default bios and About page content are built into the theme. Upload guru photo via **Customize → Academy Settings**.
+
+Use the **About Guru Page** template on your `/about/` page for the full profile (journey, mission, student promise).
+
+## Logo
+
+Upload your **ATCHAYAKRISHNA.COM** logo (gold/purple on black) via **Appearance → Customize → Site Identity → Logo**. Recommended height: 72px.
+
+## Payment Gateway (UPI / Cards / Netbanking)
+
+1. Install **WooCommerce**
+2. Install **Razorpay for WooCommerce** (or Hostinger's payment plugin)
+3. Tutor LMS → Settings → Monetization → **WooCommerce**
+4. Enable in WooCommerce → Settings → Payments:
+   - UPI
+   - Credit / Debit cards
+   - Netbanking
+
+Cart and checkout pages show a bilingual note: *"We accept UPI, Credit/Debit cards, and Netbanking."*
+
 ## Payment (WooCommerce + Tutor)
 
 1. Install WooCommerce
 2. In Tutor LMS → Settings → Monetization → select **WooCommerce**
-3. Configure Razorpay / UPI via WooCommerce payment gateway plugin on Hostinger
+3. Configure Razorpay via WooCommerce payment gateway plugin on Hostinger (supports UPI, cards, netbanking)
 
 ## Logo & Favicon
 
@@ -127,7 +151,8 @@ atchayas-astrology-online/
 ├── page-templates/
 │   ├── template-panchang.php
 │   ├── template-pancha-pakshi.php
-│   └── template-full-width.php
+│   ├── template-panchang.php
+│   └── template-about.php
 ├── template-parts/
 │   ├── hero.php
 │   ├── courses-grid.php

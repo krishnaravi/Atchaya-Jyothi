@@ -63,8 +63,8 @@ get_header();
 			</div>
 			<p class="lead">
 				<?php echo esc_html( atchaya_t(
-					'Atchaya\'s Astrology Online is a premier bilingual academy dedicated to demystifying Vedic astrology. By blending ancient cosmic wisdom with modern online learning, we offer structured courses in both Tamil and English.',
-					'அட்சயா\'ஸ் Astrology Online என்பது வேத ஜோதிடத்தை எளிமையாக கற்பிக்கும் முன்னணி இருமொழி அகாடமி. பண்டைய பிரபஞ்ச ஞானத்தை நவீன ஆன்லைன் கற்றலுடன் இணைத்து, தமிழ் மற்றும் ஆங்கிலத்தில் கட்டமைக்கப்பட்ட பாடநெறிகளை வழங்குகிறோம்.'
+					'Led by Founder Astrologer Ravichandran, Atchaya\'s Astrology Online brings Vedic Jyotish to seekers, students, and professionals—in clear Tamil and English.',
+					'ஜோதிடர் ரவிச்சந்திரன் அவர்களின் வழிகாட்டுதலில், அட்சயா\'ஸ் Astrology Online தேடுபவர்கள், மாணவர்கள் மற்றும் தொழில்முறை ஜோதிடர்களுக்கு வேத ஜோதிடத்தை எளிய தமிழ் மற்றும் ஆங்கிலத்தில் வழங்குகிறது.'
 				) ); ?>
 			</p>
 			<div class="about-actions">
