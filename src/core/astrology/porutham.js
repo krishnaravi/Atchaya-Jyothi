@@ -186,21 +186,13 @@ const calculatePorutham = (boyMoonLong, girlMoonLong) => {
   const score = results.filter(r => r.compatible).length;
   const rajjuOk = results.find(r => r.name === 'Rajju').compatible;
 
-  let recommendation;
-  if (!rajjuOk)      recommendation = 'Not recommended — Rajju dosha is present';
-  else if (score >= 7) recommendation = 'Highly compatible';
-  else if (score >= 6) recommendation = 'Compatible';
-  else if (score >= 5) recommendation = 'Partially compatible — seek further analysis';
-  else                 recommendation = 'Not recommended — too few poruthams match';
-
   return {
     boy:  { nakshatra: NAKSHATRA_NAMES[bn], rasi: RASI_NAMES[br] },
     girl: { nakshatra: NAKSHATRA_NAMES[gn], rasi: RASI_NAMES[gr] },
     results,
     score,
     total: 10,
-    rajju_dosha: !rajjuOk,
-    recommendation
+    rajju_dosha: !rajjuOk
   };
 };
 

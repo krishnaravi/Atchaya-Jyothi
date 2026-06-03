@@ -72,7 +72,7 @@ const getChart = async (req, res) => {
     const { calculatePanchangam } = require('../../core/panchangam/panchangam');
     const basicP = calculatePanchangam(date_of_birth, parseFloat(latitude), parseFloat(longitude), timezone || 'Asia/Kolkata', language);
     const upagrahas = calculateUpagrahas(planets.julDay, dayOfWeek, basicP.sunrise, basicP.sunset, timezone || 'Asia/Kolkata');
-    const yogas = detectYogas(planets.positions, lagna);
+    const { yogas } = detectYogas(planets.positions, lagna);
     const allPlanets = [...planets.positions, ...upagrahas];
     const rasiSVG = generateRasiChartSVG(allPlanets, lagna, name || 'Horoscope');
     const navamsaPlanets = varga.D9.map((p,i) => ({...planets.positions[i], rasi: p.rasi, rasi_number: p.rasi_number}));
