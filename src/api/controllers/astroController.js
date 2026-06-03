@@ -9,6 +9,7 @@ const { calculateAshtakavarga } = require('../../core/astrology/ashtakavarga');
 const { calculateShadbala } = require('../../core/astrology/shadbala');
 const { calculateDasa, calculateBhukti } = require('../../core/astrology/dasa');
 const { calculatePorutham } = require('../../core/astrology/porutham');
+const { calculateKujaDosha } = require('../../core/astrology/kujaDosha');
 const logger = require('../../utils/logger');
 
 const extractMoonLong = (date_of_birth, time_of_birth, timezone) => {
@@ -120,4 +121,20 @@ const getPorutham = async (req, res) => {
   }
 };
 
-module.exports = { getChart, getPorutham };
+const getKujaDosha = async (req, res) => {
+  try {
+    const { date_of_birth, time_of_birth, latitude, longitude, timezone, ayanamsa } = req.body;
+    if (!date_of_birth || !time_of_birth || !latitude || !longitude || !timezone)
+      return res.status(400).json({ success: false, message: 'date_of_birth, time_of_birth, latitude, longitude, timezone required' });
+    const planets = calculatePlanets(date_of_birth, time_of_birth, timezone, 'en', ayanamsa || 'lahiri');
+    const lagna   = calculateLagna(planets.julDay, parseFloat(latitude), parseFloat(longitude), 'en');
+    const result  = calculateKujaDosha(planets.positions, lagna);
+    logger.info('Kuja Dosha calculated for: ' + date_of_birth);
+    res.json({ success: true, data: result });
+  } catch (err) {
+    logger.error('Kuja Dosha error: ' + err.message);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+module.exports = { getChart, getPorutham, getKujaDosha };

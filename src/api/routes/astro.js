@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { getChart, getPorutham } = require('../controllers/astroController');
+const { getChart, getPorutham, getKujaDosha } = require('../controllers/astroController');
 const { verifyToken } = require('../middleware/auth');
 
 router.post('/chart', verifyToken, getChart);
 router.post('/porutham', verifyToken, getPorutham);
+router.post('/kuja-dosha', verifyToken, getKujaDosha);
 
 module.exports = router;
 
