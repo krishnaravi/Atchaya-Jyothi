@@ -72,13 +72,13 @@ const getChart = async (req, res) => {
     const { calculatePanchangam } = require('../../core/panchangam/panchangam');
     const basicP = calculatePanchangam(date_of_birth, parseFloat(latitude), parseFloat(longitude), timezone || 'Asia/Kolkata', language);
     const upagrahas = calculateUpagrahas(planets.julDay, dayOfWeek, basicP.sunrise, basicP.sunset, timezone || 'Asia/Kolkata');
-    const { yogas } = detectYogas(planets.positions, lagna);
+    const { yogas, present: present_yogas } = detectYogas(planets.positions, lagna);
     const allPlanets = [...planets.positions, ...upagrahas];
     const rasiSVG = generateRasiChartSVG(allPlanets, lagna, name || 'Horoscope');
     const navamsaPlanets = varga.D9.map((p,i) => ({...planets.positions[i], rasi: p.rasi, rasi_number: p.rasi_number}));
     const navamsaSVG = generateNavamsaChartSVG(navamsaPlanets, lagna, 'நவாம்சம்');
     logger.info('Chart calculated for: ' + (name || 'unknown'));
-    res.json({ success: true, data: { name, lagna, planets: planets.positions, upagrahas: upagrahas, yogas: yogas, rasi_chart_svg: rasiSVG, navamsa_chart_svg: navamsaSVG, varga_charts: varga, ashtakavarga, shadbala, current_dasa: currentDasa, current_bhukti: currentBhukti, all_dasas: dasas } });
+    res.json({ success: true, data: { name, lagna, planets: planets.positions, upagrahas: upagrahas, yogas, present_yogas, rasi_chart_svg: rasiSVG, navamsa_chart_svg: navamsaSVG, varga_charts: varga, ashtakavarga, shadbala, current_dasa: currentDasa, current_bhukti: currentBhukti, all_dasas: dasas } });
   } catch(err) {
     logger.error('Chart error: ' + err.message);
     res.status(500).json({ success: false, message: err.message });
