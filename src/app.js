@@ -16,6 +16,7 @@ const detailedPanchangamRoutes = require('./api/routes/detailedPanchangam');
 const aiRoutes = require('./api/routes/ai');
 const pdfRoutes = require('./api/routes/pdf');
 const dasaRoutes = require('./api/routes/dasa');
+const matchmakingRoutes = require('./api/routes/matchmaking');
 
 const app = express();
 
@@ -58,6 +59,7 @@ app.use('/api/panchangam', detailedPanchangamRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/pdf', pdfRoutes);
 app.use('/api/dasa', dasaRoutes);
+app.use('/api/matchmaking', matchmakingRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });
