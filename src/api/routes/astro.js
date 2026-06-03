@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const { getChart, getPorutham, getKujaDosha } = require('../controllers/astroController');
+const { getGochar, getPlanetIngress } = require('../controllers/transitController');
 const { verifyToken } = require('../middleware/auth');
 
 router.post('/chart', verifyToken, getChart);
 router.post('/porutham', verifyToken, getPorutham);
 router.post('/kuja-dosha', verifyToken, getKujaDosha);
+router.post('/transit', verifyToken, getGochar);
+router.post('/transit/ingress', verifyToken, getPlanetIngress);
 
 module.exports = router;
 
