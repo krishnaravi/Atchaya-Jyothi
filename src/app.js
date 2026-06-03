@@ -17,6 +17,7 @@ const aiRoutes = require('./api/routes/ai');
 const pdfRoutes = require('./api/routes/pdf');
 const dasaRoutes = require('./api/routes/dasa');
 const matchmakingRoutes = require('./api/routes/matchmaking');
+const chartsRoutes = require('./api/routes/charts');
 
 const app = express();
 
@@ -60,6 +61,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/pdf', pdfRoutes);
 app.use('/api/dasa', dasaRoutes);
 app.use('/api/matchmaking', matchmakingRoutes);
+app.use('/api/charts', chartsRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });
