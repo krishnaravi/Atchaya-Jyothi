@@ -25,8 +25,8 @@ const getGochar = async (req, res) => {
     logger.info(`Gochar: ${date_of_birth} → ${transit_date || today}`);
     res.json({ success: true, data: result });
   } catch (err) {
-    logger.error('Gochar error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Chart calculation failed' });
   }
 };
 
@@ -54,8 +54,8 @@ const getPlanetIngress = async (req, res) => {
     logger.info(`Ingress: ${planet} ${from_date}→${to_date} (${ingresses.length} found)`);
     res.json({ success: true, planet, from_date, to_date, count: ingresses.length, data: ingresses });
   } catch (err) {
-    logger.error('Ingress error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Chart calculation failed' });
   }
 };
 

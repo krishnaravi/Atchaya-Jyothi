@@ -139,8 +139,8 @@ Respond fully in ${langName} only.`;
       chart: { lagna, planets: planets.positions, current_dasa: currentDasa }
     });
   } catch (err) {
-    logger.error('AI error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Chart calculation failed' });
   }
 };
 

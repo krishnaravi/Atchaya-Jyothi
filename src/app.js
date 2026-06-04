@@ -3,6 +3,11 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const swaggerUi = require('swagger-ui-express');
+const yaml = require('js-yaml');
+const fs = require('fs');
+const path = require('path');
+const requestId = require('./api/middleware/requestId');
 require('dotenv').config();
 
 const authRoutes = require('./api/routes/auth');
@@ -22,6 +27,7 @@ const chartsRoutes = require('./api/routes/charts');
 const app = express();
 
 app.use(helmet());
+app.use(requestId);
 
 app.use(cors({
   origin: process.env.ALLOWED_ORIGINS || '*',
@@ -38,14 +44,39 @@ app.use('/api/', limiter);
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
-app.use(morgan('combined'));
+morgan.token('request-id', (req) => req.requestId);
+app.use(morgan(':request-id :method :url :status :res[content-length] - :response-time ms'));
 
-app.get('/health', (req, res) => {
-  res.json({
-    success: true,
-    message: 'AstroJyothi API is running!',
+app.get('/health', async (req, res) => {
+  const db    = require('./config/database');
+  const { redis } = require('./utils/cache');
+
+  const checks = {};
+
+  try {
+    await db.execute('SELECT 1');
+    checks.database = 'ok';
+  } catch {
+    checks.database = 'error';
+  }
+
+  try {
+    const pong = await redis.ping();
+    checks.cache = pong === 'PONG' ? 'ok' : 'error';
+  } catch {
+    checks.cache = 'error';
+  }
+
+  const allOk  = Object.values(checks).every(v => v === 'ok');
+  const status = allOk ? 'healthy' : 'degraded';
+
+  res.status(allOk ? 200 : 503).json({
+    success: allOk,
+    status,
     version: '1.0.0',
-    timestamp: new Date().toISOString()
+    uptime: Math.floor(process.uptime()),
+    checks,
+    timestamp: new Date().toISOString(),
   });
 });
 
@@ -58,6 +89,14 @@ app.get('/', (req, res) => {
     docs: '/docs'
   });
 });
+
+const openApiSpec = yaml.load(
+  fs.readFileSync(path.join(__dirname, '../docs/openapi.yaml'), 'utf8')
+);
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openApiSpec, {
+  customSiteTitle: 'AstroJyothi API Docs',
+  swaggerOptions: { persistAuthorization: true }
+}));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/astro', astroRoutes);
@@ -79,7 +118,7 @@ app.use((req, res) => {
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ success: false, message: 'Internal server error' });
+  res.status(500).json({ success: false, message: 'Internal server error', requestId: req.requestId });
 });
 
 module.exports = app;

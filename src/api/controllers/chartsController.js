@@ -50,8 +50,8 @@ const saveChart = async (req, res) => {
       }
     });
   } catch (err) {
-    logger.error('Save chart error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Chart operation failed' });
   }
 };
 
@@ -88,8 +88,8 @@ const listCharts = async (req, res) => {
       pagination: { page, limit, total, pages: Math.ceil(total / limit) }
     });
   } catch (err) {
-    logger.error('List charts error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Chart operation failed' });
   }
 };
 
@@ -134,8 +134,8 @@ const getChart = async (req, res) => {
       }
     });
   } catch (err) {
-    logger.error('Get chart error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Chart operation failed' });
   }
 };
 
@@ -158,8 +158,8 @@ const deleteChart = async (req, res) => {
     logger.info(`Chart deleted: ${id} by user ${userId}`);
     res.json({ success: true, message: 'Chart deleted' });
   } catch (err) {
-    logger.error('Delete chart error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Chart operation failed' });
   }
 };
 

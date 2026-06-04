@@ -10,7 +10,8 @@ const getSpouseStar = async (req, res) => {
     const result = predictSpouseStar(parseInt(nakshatra), gender);
     res.json({ success: true, data: result });
   } catch(err) {
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Chart calculation failed' });
   }
 };
 
@@ -21,7 +22,8 @@ const getNakshatraCompatibility = async (req, res) => {
     const result = checkNakshatraCompatibility(parseInt(nakshatra1), parseInt(nakshatra2));
     res.json({ success: true, data: result });
   } catch(err) {
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Chart calculation failed' });
   }
 };
 
@@ -34,7 +36,8 @@ const getPulippaniAnalysis = async (req, res) => {
     const analysis = analyzePulippani(planetsData.positions, panchangam);
     res.json({ success: true, data: { analysis, planets: planetsData.positions, panchangam } });
   } catch(err) {
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Chart calculation failed' });
   }
 };
 

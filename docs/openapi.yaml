@@ -1,0 +1,1316 @@
+openapi: 3.0.3
+
+info:
+  title: AstroJyothi API
+  description: |
+    Vedic Astrology API — chart calculations, dasa, panchangam, muhurtham, matchmaking and more.
+
+    ## Authentication
+    Most endpoints require a JWT Bearer token. Obtain one via `POST /api/auth/login`.
+
+    ## Rate Limiting
+    100 requests per 15 minutes per IP across all `/api/*` routes.
+  version: 1.0.0
+  contact:
+    email: krishnalaya50@gmail.com
+
+servers:
+  - url: https://api.krishnalaya.cloud
+    description: Production
+
+# Global security — overridden per-endpoint where auth is not required
+security:
+  - BearerAuth: []
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Components
+# ─────────────────────────────────────────────────────────────────────────────
+components:
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "Obtain via POST /api/auth/login. Pass as: Authorization: Bearer {token}"
+
+  # ── Reusable request schemas ──────────────────────────────────────────────
+  schemas:
+
+    # Primitives / shared fields
+    BirthPayload:
+      type: object
+      required: [date_of_birth, time_of_birth, latitude, longitude, timezone]
+      properties:
+        date_of_birth:
+          type: string
+          pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'
+          example: "1990-06-15"
+          description: YYYY-MM-DD (leap years validated)
+        time_of_birth:
+          type: string
+          pattern: '^([01]\d|2[0-3]):([0-5]\d)(:[0-5]\d)?$'
+          example: "06:30"
+          description: HH:MM or HH:MM:SS
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+          example: 13.0827
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+          example: 80.2707
+        timezone:
+          type: string
+          example: "Asia/Kolkata"
+          description: IANA timezone string
+
+    Lang:
+      type: string
+      enum: [en, ta, te, kn, ml, hi]
+      default: en
+
+    Ayanamsa:
+      type: string
+      enum: [lahiri, raman, krishnamurti, yukteswar, de_luce, fagan_bradley]
+      default: lahiri
+
+    DasaPlanet:
+      type: string
+      enum: [Ketu, Venus, Sun, Moon, Mars, Rahu, Jupiter, Saturn, Mercury]
+
+    NakshatraIndex:
+      type: integer
+      minimum: 0
+      maximum: 26
+      description: "0 = Ashwini … 26 = Revati"
+
+    # ── Request bodies ──────────────────────────────────────────────────────
+
+    ChartRequest:
+      allOf:
+        - $ref: '#/components/schemas/BirthPayload'
+        - type: object
+          properties:
+            name:
+              type: string
+              maxLength: 100
+              example: "Ravi"
+            place_of_birth:
+              type: string
+              maxLength: 200
+              example: "Chennai, Tamil Nadu"
+            gender:
+              type: string
+              enum: [male, female, other]
+            lang:
+              $ref: '#/components/schemas/Lang'
+            ayanamsa:
+              $ref: '#/components/schemas/Ayanamsa'
+
+    AstroPoruthamRequest:
+      type: object
+      required: [boy, girl]
+      properties:
+        boy:
+          $ref: '#/components/schemas/BirthPayload'
+        girl:
+          $ref: '#/components/schemas/BirthPayload'
+
+    TransitRequest:
+      allOf:
+        - $ref: '#/components/schemas/BirthPayload'
+        - type: object
+          properties:
+            transit_date:
+              type: string
+              pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'
+              example: "2026-06-04"
+              description: Defaults to today
+            transit_time:
+              type: string
+              pattern: '^([01]\d|2[0-3]):([0-5]\d)(:[0-5]\d)?$'
+              example: "10:00"
+              description: Defaults to 00:00
+            ayanamsa:
+              $ref: '#/components/schemas/Ayanamsa'
+
+    IngressRequest:
+      type: object
+      required: [planet, from_date, to_date, timezone]
+      properties:
+        planet:
+          type: string
+          enum: [Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu, Ketu]
+          example: Jupiter
+        from_date:
+          type: string
+          pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'
+          example: "2026-01-01"
+        to_date:
+          type: string
+          pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'
+          example: "2027-01-01"
+          description: Max 2 years from from_date
+        timezone:
+          type: string
+          example: "Asia/Kolkata"
+        ayanamsa:
+          $ref: '#/components/schemas/Ayanamsa'
+
+    MahadasaRequest:
+      $ref: '#/components/schemas/BirthPayload'
+
+    BhuktiRequest:
+      allOf:
+        - $ref: '#/components/schemas/BirthPayload'
+        - type: object
+          required: [dasa_planet]
+          properties:
+            dasa_planet:
+              $ref: '#/components/schemas/DasaPlanet'
+              example: Jupiter
+
+    AntaraRequest:
+      allOf:
+        - $ref: '#/components/schemas/BirthPayload'
+        - type: object
+          required: [dasa_planet, bhukti_planet]
+          properties:
+            dasa_planet:
+              $ref: '#/components/schemas/DasaPlanet'
+              example: Jupiter
+            bhukti_planet:
+              $ref: '#/components/schemas/DasaPlanet'
+              example: Saturn
+
+    SukshmaRequest:
+      allOf:
+        - $ref: '#/components/schemas/BirthPayload'
+        - type: object
+          required: [dasa_planet, bhukti_planet, antara_planet]
+          properties:
+            dasa_planet:
+              $ref: '#/components/schemas/DasaPlanet'
+              example: Jupiter
+            bhukti_planet:
+              $ref: '#/components/schemas/DasaPlanet'
+              example: Saturn
+            antara_planet:
+              $ref: '#/components/schemas/DasaPlanet'
+              example: Mercury
+
+    PranaRequest:
+      allOf:
+        - $ref: '#/components/schemas/BirthPayload'
+        - type: object
+          required: [dasa_planet, bhukti_planet, antara_planet, sukshma_planet]
+          properties:
+            dasa_planet:
+              $ref: '#/components/schemas/DasaPlanet'
+              example: Jupiter
+            bhukti_planet:
+              $ref: '#/components/schemas/DasaPlanet'
+              example: Saturn
+            antara_planet:
+              $ref: '#/components/schemas/DasaPlanet'
+              example: Mercury
+            sukshma_planet:
+              $ref: '#/components/schemas/DasaPlanet'
+              example: Venus
+
+    DasaPoruthamRequest:
+      type: object
+      required: [boy_nakshatra, girl_nakshatra]
+      properties:
+        boy_nakshatra:
+          $ref: '#/components/schemas/NakshatraIndex'
+          example: 4
+        girl_nakshatra:
+          $ref: '#/components/schemas/NakshatraIndex'
+          example: 15
+
+    PanchangamRequest:
+      type: object
+      required: [date, latitude, longitude, timezone]
+      properties:
+        date:
+          type: string
+          pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'
+          example: "2026-06-04"
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+          example: 13.0827
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+          example: 80.2707
+        timezone:
+          type: string
+          example: "Asia/Kolkata"
+        lang:
+          $ref: '#/components/schemas/Lang'
+
+    MuhurthamRequest:
+      type: object
+      required: [start_date, end_date, occasion, latitude, longitude, timezone]
+      properties:
+        start_date:
+          type: string
+          pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'
+          example: "2026-07-01"
+        end_date:
+          type: string
+          pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$'
+          example: "2026-08-31"
+        occasion:
+          type: string
+          enum: [marriage, house_warming, vehicle, business, education]
+          example: marriage
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+          example: 13.0827
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+          example: 80.2707
+        timezone:
+          type: string
+          example: "Asia/Kolkata"
+        lang:
+          $ref: '#/components/schemas/Lang'
+
+    # ── Response schemas ────────────────────────────────────────────────────
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: '"date_of_birth" must be YYYY-MM-DD'
+
+    Planet:
+      type: object
+      properties:
+        planet:       { type: string,  example: Sun }
+        rasi:         { type: string,  example: Gemini }
+        rasi_number:  { type: integer, example: 3 }
+        degrees:      { type: number,  example: 0.85 }
+        nakshatra:    { type: string,  example: Mrigasira }
+        pada:         { type: integer, example: 3 }
+        is_retrograde: { type: boolean, example: false }
+
+    Lagna:
+      type: object
+      properties:
+        rasi:      { type: string,  example: Aries }
+        degrees:   { type: number,  example: 14.52 }
+        nakshatra: { type: string,  example: Bharani }
+        pada:      { type: integer, example: 2 }
+
+    DasaPeriod:
+      type: object
+      properties:
+        planet:     { type: string, example: Jupiter }
+        start_date: { type: string, format: date, example: "2020-03-10" }
+        end_date:   { type: string, format: date, example: "2036-03-10" }
+        years:      { type: number, example: 16 }
+
+    SubPeriod:
+      type: object
+      properties:
+        planet:     { type: string, example: Saturn }
+        start_date: { type: string, format: date, example: "2022-03-10" }
+        end_date:   { type: string, format: date, example: "2024-09-10" }
+
+    PoruthamItem:
+      type: object
+      properties:
+        name:  { type: string,  example: Dina }
+        match: { type: boolean, example: true }
+        score: { type: integer, example: 1 }
+
+    PoruthamPartner:
+      type: object
+      properties:
+        nakshatra:        { type: string,  example: Rohini }
+        nakshatra_number: { type: integer, example: 4 }
+        rasi:             { type: string,  example: Taurus }
+
+    PoruthamResult:
+      type: object
+      properties:
+        boy:            { $ref: '#/components/schemas/PoruthamPartner' }
+        girl:           { $ref: '#/components/schemas/PoruthamPartner' }
+        score:
+          type: integer
+          minimum: 0
+          maximum: 10
+          example: 7
+        percentage:     { type: integer, example: 70 }
+        recommendation:
+          type: string
+          enum: [Excellent Match, Good Match, Average Match, Not Recommended]
+          example: Good Match
+        rajju_dosha:    { type: boolean, example: false }
+        poruthams:
+          type: array
+          items: { $ref: '#/components/schemas/PoruthamItem' }
+        summary_tamil:   { type: string, example: "10ல் 7 பொருத்தங்கள் அமைந்துள்ளன." }
+        summary_english: { type: string, example: "7 out of 10 poruthams matched. Good match for marriage." }
+
+    ChartData:
+      type: object
+      properties:
+        name:              { type: string, example: Ravi }
+        lagna:             { $ref: '#/components/schemas/Lagna' }
+        planets:
+          type: array
+          items: { $ref: '#/components/schemas/Planet' }
+        upagrahas:
+          type: array
+          items: { $ref: '#/components/schemas/Planet' }
+        present_yogas:
+          type: array
+          items: { type: string }
+          example: [Gajakesari, Budha-Aditya]
+        rasi_chart_svg:    { type: string, description: SVG markup }
+        navamsa_chart_svg: { type: string, description: SVG markup }
+        varga_charts:      { type: object, description: "D1–D60 varga positions" }
+        ashtakavarga:      { type: object }
+        shadbala:          { type: object }
+        current_dasa:      { $ref: '#/components/schemas/DasaPeriod' }
+        current_bhukti:    { $ref: '#/components/schemas/SubPeriod' }
+        all_dasas:
+          type: array
+          items: { $ref: '#/components/schemas/DasaPeriod' }
+
+    TimeRange:
+      type: object
+      properties:
+        start: { type: string, example: "12:00" }
+        end:   { type: string, example: "13:30" }
+
+    PanchangamData:
+      type: object
+      properties:
+        date:    { type: string, format: date, example: "2026-06-04" }
+        day:     { type: string, example: Wednesday }
+        sunrise: { type: string, example: "05:58" }
+        sunset:  { type: string, example: "18:32" }
+        tithi:
+          type: object
+          properties:
+            name:     { type: string, example: Dasami }
+            number:   { type: integer, example: 10 }
+            end_time: { type: string, example: "14:23" }
+        nakshatra:
+          type: object
+          properties:
+            name:     { type: string, example: Swati }
+            number:   { type: integer, example: 15 }
+            end_time: { type: string, example: "09:45" }
+        yoga:
+          type: object
+          properties:
+            name:   { type: string, example: Siddhi }
+            number: { type: integer, example: 21 }
+        karana:
+          type: object
+          properties:
+            name:   { type: string, example: Bava }
+            number: { type: integer, example: 1 }
+        rahu_kalam:  { $ref: '#/components/schemas/TimeRange' }
+        yamagandam:  { $ref: '#/components/schemas/TimeRange' }
+        gulikai:     { $ref: '#/components/schemas/TimeRange' }
+
+    MuhurthamSlot:
+      type: object
+      properties:
+        date:       { type: string, format: date, example: "2026-07-12" }
+        day:        { type: string, example: Sunday }
+        nakshatra:  { type: string, example: Rohini }
+        tithi:      { type: string, example: Panchami }
+        muhurtham:  { type: string, example: Abhijit }
+        start_time: { type: string, example: "11:52" }
+        end_time:   { type: string, example: "12:44" }
+        quality:    { type: string, enum: [Excellent, Good, Average] }
+        notes:      { type: string, example: "சூரியன் உத்தரம் — திருமணத்திற்கு சிறந்தது" }
+
+    IngressEvent:
+      type: object
+      properties:
+        date:      { type: string, format: date, example: "2026-05-01" }
+        from_rasi: { type: string, example: Aries }
+        to_rasi:   { type: string, example: Taurus }
+
+  # ── Reusable responses ─────────────────────────────────────────────────────
+  responses:
+
+    BadRequest:
+      description: Validation error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          examples:
+            bad_date:
+              summary: Invalid date
+              value: { success: false, message: '"date_of_birth" must be YYYY-MM-DD' }
+            bad_time:
+              summary: Invalid time
+              value: { success: false, message: '"time_of_birth" must be HH:MM or HH:MM:SS' }
+            bad_lat:
+              summary: Invalid latitude
+              value: { success: false, message: '"latitude" must be between -90 and 90' }
+            bad_timezone:
+              summary: Invalid timezone
+              value: { success: false, message: '"timezone" must be a valid IANA timezone (e.g. Asia/Kolkata)' }
+
+    Unauthorized:
+      description: Missing token
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example: { success: false, message: 'Access token required' }
+
+    Forbidden:
+      description: Expired or invalid token
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example: { success: false, message: 'Invalid or expired token' }
+
+    TooManyRequests:
+      description: Rate limit exceeded (100 req / 15 min)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example: { success: false, message: 'Too many requests, please try again later.' }
+
+    InternalError:
+      description: Unexpected server error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Paths
+# ─────────────────────────────────────────────────────────────────────────────
+paths:
+
+  # ── Auth ──────────────────────────────────────────────────────────────────
+
+  /api/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register new user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:     { type: string, minLength: 1, maxLength: 100, example: Ravi }
+                email:    { type: string, format: email, example: ravi@example.com }
+                password: { type: string, minLength: 6, maxLength: 128, example: secret123 }
+            example:
+              name: Ravi
+              email: ravi@example.com
+              password: secret123
+      responses:
+        '201':
+          description: Registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: Registration successful }
+                  data:
+                    type: object
+                    properties:
+                      id:      { type: string, format: uuid }
+                      name:    { type: string, example: Ravi }
+                      email:   { type: string, example: ravi@example.com }
+                      api_key: { type: string, example: "a3f9bc..." }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409':
+          description: Email already exists
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example: { success: false, message: Email already exists }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login and obtain JWT tokens
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:    { type: string, format: email, example: ravi@example.com }
+                password: { type: string, example: secret123 }
+            example:
+              email: ravi@example.com
+              password: secret123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data:
+                    type: object
+                    properties:
+                      accessToken:  { type: string }
+                      refreshToken: { type: string }
+                      user:
+                        type: object
+                        properties:
+                          id:    { type: string, format: uuid }
+                          name:  { type: string, example: Ravi }
+                          email: { type: string, example: ravi@example.com }
+                          role:  { type: string, example: user }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example: { success: false, message: Invalid credentials }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /api/auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken: { type: string }
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:      { type: boolean, example: true }
+                  data:
+                    type: object
+                    properties:
+                      accessToken:  { type: string }
+                      refreshToken: { type: string }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  # ── Chart ─────────────────────────────────────────────────────────────────
+
+  /api/astro/chart:
+    post:
+      tags: [Chart]
+      summary: Full birth chart — planets, lagna, yogas, dasa, SVG charts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ChartRequest' }
+            examples:
+              chennai:
+                summary: Chennai birth chart
+                value:
+                  date_of_birth: "1990-06-15"
+                  time_of_birth: "06:30"
+                  latitude: 13.0827
+                  longitude: 80.2707
+                  timezone: Asia/Kolkata
+                  name: Ravi
+                  lang: ta
+                  ayanamsa: lahiri
+              leap_year:
+                summary: Leap year date
+                value:
+                  date_of_birth: "2000-02-29"
+                  time_of_birth: "12:00"
+                  latitude: 28.6139
+                  longitude: 77.2090
+                  timezone: Asia/Kolkata
+      responses:
+        '200':
+          description: Chart calculated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data:    { $ref: '#/components/schemas/ChartData' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /api/astro/kuja-dosha:
+    post:
+      tags: [Chart]
+      summary: Kuja Dosha (Mars affliction) check
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ChartRequest' }
+            example:
+              date_of_birth: "1990-06-15"
+              time_of_birth: "06:30"
+              latitude: 13.0827
+              longitude: 80.2707
+              timezone: Asia/Kolkata
+      responses:
+        '200':
+          description: Kuja Dosha result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data:
+                    type: object
+                    properties:
+                      has_dosha:   { type: boolean, example: true }
+                      mars_house:  { type: integer, example: 7 }
+                      severity:    { type: string,  example: High }
+                      description: { type: string,  example: "Mars in 7th house causes Kuja Dosha" }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /api/astro/porutham:
+    post:
+      tags: [Chart]
+      summary: Porutham from full birth details (10 porutham check)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AstroPoruthamRequest' }
+            example:
+              boy:
+                date_of_birth: "1990-06-15"
+                time_of_birth: "06:30"
+                latitude: 13.0827
+                longitude: 80.2707
+                timezone: Asia/Kolkata
+              girl:
+                date_of_birth: "1993-11-22"
+                time_of_birth: "14:15"
+                latitude: 11.0168
+                longitude: 76.9558
+                timezone: Asia/Kolkata
+      responses:
+        '200':
+          description: Porutham result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data:    { $ref: '#/components/schemas/PoruthamResult' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /api/astro/transit:
+    post:
+      tags: [Chart]
+      summary: Gochar (transit) — current planetary positions vs natal chart
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TransitRequest' }
+            example:
+              date_of_birth: "1990-06-15"
+              time_of_birth: "06:30"
+              latitude: 13.0827
+              longitude: 80.2707
+              timezone: Asia/Kolkata
+              transit_date: "2026-06-04"
+              transit_time: "10:00"
+      responses:
+        '200':
+          description: Transit analysis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data:
+                    type: object
+                    properties:
+                      natal:
+                        type: object
+                        properties:
+                          moon_rasi:      { type: string, example: Taurus }
+                          moon_nakshatra: { type: string, example: Rohini }
+                      transit_planets:
+                        type: array
+                        items: { $ref: '#/components/schemas/Planet' }
+                      effects:
+                        type: array
+                        items: { type: object }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /api/astro/transit/ingress:
+    post:
+      tags: [Chart]
+      summary: Planet ingress dates — when a planet enters each rasi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/IngressRequest' }
+            examples:
+              jupiter_2026:
+                summary: Jupiter ingress 2026
+                value:
+                  planet: Jupiter
+                  from_date: "2026-01-01"
+                  to_date: "2027-01-01"
+                  timezone: Asia/Kolkata
+              saturn:
+                summary: Saturn ingress
+                value:
+                  planet: Saturn
+                  from_date: "2026-01-01"
+                  to_date: "2028-01-01"
+                  timezone: Asia/Kolkata
+      responses:
+        '200':
+          description: List of ingress events
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:   { type: boolean, example: true }
+                  planet:    { type: string,  example: Jupiter }
+                  from_date: { type: string,  format: date }
+                  to_date:   { type: string,  format: date }
+                  count:     { type: integer, example: 2 }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/IngressEvent' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  # ── Dasa ──────────────────────────────────────────────────────────────────
+
+  /api/dasa/mahadasa:
+    post:
+      tags: [Dasa]
+      summary: Vimsottari Mahadasa list with current dasa
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MahadasaRequest' }
+            example:
+              date_of_birth: "1990-06-15"
+              time_of_birth: "06:30"
+              latitude: 13.0827
+              longitude: 80.2707
+              timezone: Asia/Kolkata
+      responses:
+        '200':
+          description: Mahadasa list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data:
+                    type: object
+                    properties:
+                      dasas:
+                        type: array
+                        items: { $ref: '#/components/schemas/DasaPeriod' }
+                      current_dasa: { $ref: '#/components/schemas/DasaPeriod' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /api/dasa/bhukti:
+    post:
+      tags: [Dasa]
+      summary: Bhukti (antardasa) list within a mahadasa
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BhuktiRequest' }
+            example:
+              date_of_birth: "1990-06-15"
+              time_of_birth: "06:30"
+              latitude: 13.0827
+              longitude: 80.2707
+              timezone: Asia/Kolkata
+              dasa_planet: Jupiter
+      responses:
+        '200':
+          description: Bhukti list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data:
+                    type: object
+                    properties:
+                      dasa_planet:    { type: string,  example: Jupiter }
+                      dasa_start:     { type: string,  format: date }
+                      dasa_end:       { type: string,  format: date }
+                      bhuktis:
+                        type: array
+                        items: { $ref: '#/components/schemas/SubPeriod' }
+                      current_bhukti: { $ref: '#/components/schemas/SubPeriod' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /api/dasa/antara:
+    post:
+      tags: [Dasa]
+      summary: Antara dasa within a bhukti
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AntaraRequest' }
+            example:
+              date_of_birth: "1990-06-15"
+              time_of_birth: "06:30"
+              latitude: 13.0827
+              longitude: 80.2707
+              timezone: Asia/Kolkata
+              dasa_planet: Jupiter
+              bhukti_planet: Saturn
+      responses:
+        '200':
+          description: Antara list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:         { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      dasa_planet:    { type: string }
+                      bhukti_planet:  { type: string }
+                      antaras:
+                        type: array
+                        items: { $ref: '#/components/schemas/SubPeriod' }
+                      current_antara: { $ref: '#/components/schemas/SubPeriod' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /api/dasa/sukshma:
+    post:
+      tags: [Dasa]
+      summary: Sukshma dasa within an antara
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SukshmaRequest' }
+            example:
+              date_of_birth: "1990-06-15"
+              time_of_birth: "06:30"
+              latitude: 13.0827
+              longitude: 80.2707
+              timezone: Asia/Kolkata
+              dasa_planet: Jupiter
+              bhukti_planet: Saturn
+              antara_planet: Mercury
+      responses:
+        '200':
+          description: Sukshma list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      dasa_planet:     { type: string }
+                      bhukti_planet:   { type: string }
+                      antara_planet:   { type: string }
+                      sukshmas:
+                        type: array
+                        items: { $ref: '#/components/schemas/SubPeriod' }
+                      current_sukshma: { $ref: '#/components/schemas/SubPeriod' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /api/dasa/prana:
+    post:
+      tags: [Dasa]
+      summary: Prana dasa within a sukshma
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PranaRequest' }
+            example:
+              date_of_birth: "1990-06-15"
+              time_of_birth: "06:30"
+              latitude: 13.0827
+              longitude: 80.2707
+              timezone: Asia/Kolkata
+              dasa_planet: Jupiter
+              bhukti_planet: Saturn
+              antara_planet: Mercury
+              sukshma_planet: Venus
+      responses:
+        '200':
+          description: Prana list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  data:
+                    type: object
+                    properties:
+                      dasa_planet:    { type: string }
+                      bhukti_planet:  { type: string }
+                      antara_planet:  { type: string }
+                      sukshma_planet: { type: string }
+                      pranas:
+                        type: array
+                        items: { $ref: '#/components/schemas/SubPeriod' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /api/dasa/porutham:
+    post:
+      tags: [Dasa]
+      summary: Porutham by nakshatra index (0–26)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/DasaPoruthamRequest' }
+            examples:
+              good_match:
+                summary: Rohini × Swati (Good Match)
+                value: { boy_nakshatra: 4, girl_nakshatra: 15 }
+              excellent:
+                summary: Rohini × Rohini (Excellent Match)
+                value: { boy_nakshatra: 4, girl_nakshatra: 4 }
+      responses:
+        '200':
+          description: Porutham result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data:    { $ref: '#/components/schemas/PoruthamResult' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  # ── Panchangam ────────────────────────────────────────────────────────────
+
+  /api/panchangam/daily:
+    post:
+      tags: [Panchangam]
+      summary: Daily panchangam — tithi, nakshatra, yoga, karana, rahu kalam
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PanchangamRequest' }
+            example:
+              date: "2026-06-04"
+              latitude: 13.0827
+              longitude: 80.2707
+              timezone: Asia/Kolkata
+              lang: ta
+      responses:
+        '200':
+          description: Daily panchangam data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  cached:  { type: boolean, example: false, description: "true = Redis cache hit (24h TTL)" }
+                  data:    { $ref: '#/components/schemas/PanchangamData' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /api/panchangam/detailed:
+    post:
+      tags: [Panchangam]
+      summary: Detailed panchangam — lagna timings, muhurtham windows, varasoolai
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PanchangamRequest' }
+            example:
+              date: "2026-06-04"
+              latitude: 13.0827
+              longitude: 80.2707
+              timezone: Asia/Kolkata
+      responses:
+        '200':
+          description: Detailed panchangam data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  cached:  { type: boolean, example: false }
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/PanchangamData'
+                      - type: object
+                        properties:
+                          lagna_timings:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                rasi:  { type: string, example: Aries }
+                                start: { type: string, example: "05:58" }
+                                end:   { type: string, example: "08:10" }
+                          muhurtham_timings:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                name:    { type: string, example: Abhijit }
+                                start:   { type: string, example: "11:52" }
+                                end:     { type: string, example: "12:44" }
+                                quality: { type: string, example: Excellent }
+                          varasoolai: { type: string, example: North }
+                          nethram:    { type: string, example: East }
+                          jeevan:     { type: string, example: South }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  # ── Muhurtham ─────────────────────────────────────────────────────────────
+
+  /api/muhurtham/find:
+    post:
+      tags: [Muhurtham]
+      summary: Find auspicious dates and times for an occasion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MuhurthamRequest' }
+            examples:
+              marriage:
+                summary: Marriage muhurtham
+                value:
+                  start_date: "2026-07-01"
+                  end_date: "2026-08-31"
+                  occasion: marriage
+                  latitude: 13.0827
+                  longitude: 80.2707
+                  timezone: Asia/Kolkata
+                  lang: ta
+              house_warming:
+                summary: Gruhapravesam
+                value:
+                  start_date: "2026-07-01"
+                  end_date: "2026-07-31"
+                  occasion: house_warming
+                  latitude: 13.0827
+                  longitude: 80.2707
+                  timezone: Asia/Kolkata
+      responses:
+        '200':
+          description: Auspicious muhurtham slots
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:  { type: boolean, example: true }
+                  occasion: { type: string,  example: marriage }
+                  total:    { type: integer, example: 5 }
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/MuhurthamSlot' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  # ── Matchmaking ───────────────────────────────────────────────────────────
+
+  /api/matchmaking:
+    get:
+      tags: [Matchmaking]
+      summary: Porutham by nakshatra index — public endpoint, no auth required
+      security: []
+      parameters:
+        - name: boyNakshatra
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 26
+          example: 4
+          description: "Boy's nakshatra index (0 = Ashwini … 26 = Revati)"
+        - name: girlNakshatra
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 26
+          example: 15
+          description: "Girl's nakshatra index (0 = Ashwini … 26 = Revati)"
+      responses:
+        '200':
+          description: Porutham result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/PoruthamResult'
+                      - type: object
+                        properties:
+                          rajjuDosha:     { type: boolean, example: false }
+                          summaryTamil:   { type: string }
+                          summaryEnglish: { type: string }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  # ── PDF ───────────────────────────────────────────────────────────────────
+
+  /api/pdf/horoscope:
+    post:
+      tags: [PDF]
+      summary: Generate and download full horoscope as PDF
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ChartRequest' }
+            example:
+              date_of_birth: "1990-06-15"
+              time_of_birth: "06:30"
+              latitude: 13.0827
+              longitude: 80.2707
+              timezone: Asia/Kolkata
+              name: Ravi
+              lang: ta
+      responses:
+        '200':
+          description: PDF file download
+          headers:
+            Content-Disposition:
+              schema: { type: string }
+              example: 'attachment; filename="AstroJyothi_Ravi.pdf"'
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '500': { $ref: '#/components/responses/InternalError' }

@@ -64,8 +64,8 @@ const getMahadasa = async (req, res) => {
     logger.info('Mahadasa calculated for: ' + date_of_birth);
     res.json({ success: true, data: { dasas, current_dasa } });
   } catch (err) {
-    logger.error('Mahadasa error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Dasa calculation failed' });
   }
 };
 
@@ -85,8 +85,8 @@ const getBhukti = async (req, res) => {
     logger.info('Bhukti calculated for dasa: ' + dasa_planet);
     res.json({ success: true, data: { dasa_planet, dasa_start: dasa.start_date, dasa_end: dasa.end_date, bhuktis, current_bhukti } });
   } catch (err) {
-    logger.error('Bhukti error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Dasa calculation failed' });
   }
 };
 
@@ -106,8 +106,8 @@ const getAntara = async (req, res) => {
     logger.info('Antara calculated for ' + dasa_planet + '/' + bhukti_planet);
     res.json({ success: true, data: { dasa_planet, bhukti_planet, antaras, current_antara } });
   } catch (err) {
-    logger.error('Antara error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Dasa calculation failed' });
   }
 };
 
@@ -127,8 +127,8 @@ const getSukshma = async (req, res) => {
     logger.info('Sukshma calculated for ' + dasa_planet + '/' + bhukti_planet + '/' + antara_planet);
     res.json({ success: true, data: { dasa_planet, bhukti_planet, antara_planet, sukshmas, current_sukshma } });
   } catch (err) {
-    logger.error('Sukshma error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Dasa calculation failed' });
   }
 };
 
@@ -147,8 +147,8 @@ const getPrana = async (req, res) => {
     logger.info('Prana calculated for ' + dasa_planet + '/' + bhukti_planet + '/' + antara_planet + '/' + sukshma_planet);
     res.json({ success: true, data: { dasa_planet, bhukti_planet, antara_planet, sukshma_planet, pranas } });
   } catch (err) {
-    logger.error('Prana error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Dasa calculation failed' });
   }
 };
 
@@ -174,8 +174,8 @@ const getPorutham = async (req, res) => {
       }
     });
   } catch (err) {
-    logger.error('Porutham error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Porutham calculation failed' });
   }
 };
 

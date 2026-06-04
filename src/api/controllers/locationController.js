@@ -32,8 +32,8 @@ const getLocation = async (req, res) => {
     logger.info('Location search: ' + query);
     res.json({ success: true, data: locations });
   } catch(err) {
-    logger.error('Location error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Location search failed' });
   }
 };
 

@@ -93,8 +93,8 @@ const generatePDF = async (req, res) => {
     res.send(pdf);
     logger.info('PDF generated for: ' + (name || 'unknown'));
   } catch(err) {
-    logger.error('PDF error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'PDF generation failed' });
   }
 };
 

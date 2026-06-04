@@ -24,8 +24,8 @@ const getMultiLangChart = async (req, res) => {
     logger.info('MultiLang chart: ' + language);
     res.json({ success: true, language, data: { lagna, planets: translatedPlanets, current_dasa: currentDasa, all_dasas: dasas } });
   } catch(err) {
-    logger.error('MultiLang error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Chart calculation failed' });
   }
 };
 

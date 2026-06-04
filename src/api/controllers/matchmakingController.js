@@ -63,8 +63,8 @@ const getMatchmaking = async (req, res) => {
       }
     });
   } catch (err) {
-    logger.error('Matchmaking error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Porutham calculation failed' });
   }
 };
 

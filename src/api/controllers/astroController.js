@@ -51,8 +51,8 @@ const getChart = async (req, res) => {
     logger.info('Chart calculated for: ' + (name || 'unknown'));
     res.json({ success: true, data });
   } catch(err) {
-    logger.error('Chart error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Chart calculation failed' });
   }
 };
 
@@ -87,8 +87,8 @@ const getPorutham = async (req, res) => {
       }
     });
   } catch (err) {
-    logger.error('Astro porutham error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Porutham calculation failed' });
   }
 };
 
@@ -103,8 +103,8 @@ const getKujaDosha = async (req, res) => {
     logger.info('Kuja Dosha calculated for: ' + date_of_birth);
     res.json({ success: true, data: result });
   } catch (err) {
-    logger.error('Kuja Dosha error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Chart calculation failed' });
   }
 };
 

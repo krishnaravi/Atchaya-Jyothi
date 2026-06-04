@@ -24,8 +24,8 @@ const register = async (req, res) => {
     logger.info('New user registered: ' + email);
     res.status(201).json({ success: true, message: 'Registration successful', data: { id, name, email, api_key: apiKey } });
   } catch (err) {
-    logger.error('Register error: ' + err.message);
-    res.status(500).json({ success: false, message: 'Server error' });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
@@ -49,8 +49,8 @@ const login = async (req, res) => {
     logger.info('User logged in: ' + email);
     res.json({ success: true, message: 'Login successful', data: { accessToken, refreshToken, user: { id: user.id, name: user.name, email: user.email, role: user.role } } });
   } catch (err) {
-    logger.error('Login error: ' + err.message);
-    res.status(500).json({ success: false, message: 'Server error' });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 

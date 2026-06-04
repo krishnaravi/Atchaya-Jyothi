@@ -16,8 +16,8 @@ const getMuhurtham = async (req, res) => {
     logger.info('Muhurtham calculated: ' + occasion + ' ' + start_date + ' to ' + end_date);
     res.json({ success: true, occasion, total: results.length, data: results });
   } catch(err) {
-    logger.error('Muhurtham error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Muhurtham calculation failed' });
   }
 };
 

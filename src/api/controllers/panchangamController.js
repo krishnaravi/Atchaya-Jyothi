@@ -19,8 +19,8 @@ const getPanchangam = async (req, res) => {
     logger.info('Panchangam calculated: ' + date);
     res.json({ success: true, cached: false, data: result });
   } catch(err) {
-    logger.error('Panchangam error: ' + err.message);
-    res.status(500).json({ success: false, message: err.message });
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Panchangam calculation failed' });
   }
 };
 
