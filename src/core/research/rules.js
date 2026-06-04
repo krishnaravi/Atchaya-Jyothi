@@ -67,7 +67,8 @@ const analyzePulippani = (planets, panchangam) => {
   for(const p of planets){
     if(PULIPPANI_RULES.benefic_planets.includes(p.planet)) analysis.benefic_count++;
     if(PULIPPANI_RULES.malefic_planets.includes(p.planet)) analysis.malefic_count++;
-    if(PULIPPANI_RULES.benefic_nakshatras.includes(p.nakshatraIndex+1)) analysis.observations.push(p.planet + ' in benefic nakshatra');
+    const nakIdx = Math.floor(((p.rasi_number - 1) * 30 + p.degrees) / (360 / 27));
+    if (PULIPPANI_RULES.benefic_nakshatras.includes(nakIdx + 1)) analysis.observations.push(p.planet + ' in benefic nakshatra');
   }
   if(PULIPPANI_RULES.strong_yogas.includes(panchangam.yoga)){ analysis.strong_yoga = true; analysis.observations.push('Strong Yoga: ' + panchangam.yoga); }
   if(PULIPPANI_RULES.weak_yogas.includes(panchangam.yoga)){ analysis.observations.push('Weak Yoga: ' + panchangam.yoga); }

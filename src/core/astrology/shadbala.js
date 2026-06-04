@@ -21,14 +21,16 @@ const getSthanaBala = (planet, longitude) => {
 };
 
 // 2. Dig Bala (Directional Strength)
+// Best direction offsets from lagna (degrees): 0=1st, 90=4th, 180=7th, 270=10th
 const DIG_BALA_BEST = { Sun: 270, Moon: 270, Mars: 90, Mercury: 0, Jupiter: 0, Venus: 270, Saturn: 90 };
 
-const getDigBala = (planet, houses) => {
-  const bestHouse = DIG_BALA_BEST[planet];
-  if(bestHouse === undefined) return 30;
-  const lagna = houses.ascendant;
-  const bestLong = (lagna + bestHouse) % 360;
-  return 30;
+const getDigBala = (planet, { ascendant, planetLong }) => {
+  const bestOffset = DIG_BALA_BEST[planet];
+  if (bestOffset === undefined) return 30;
+  const bestLong = (ascendant + bestOffset) % 360;
+  let diff = Math.abs(planetLong - bestLong);
+  if (diff > 180) diff = 360 - diff;
+  return Math.round(60 * (1 - diff / 180));
 };
 
 // Calculate basic Shadbala
@@ -36,10 +38,11 @@ const calculateShadbala = (planets, lagna) => {
   const result = [];
   const planetNames = ['Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn'];
   
+  const lagnaLong = (lagna.rasi_number - 1) * 30 + lagna.degrees;
   planets.filter(p => planetNames.includes(p.planet)).forEach(p => {
     const longitude = (p.rasi_number - 1) * 30 + p.degrees;
     const sthana = getSthanaBala(p.planet, longitude);
-    const dig = getDigBala(p.planet, { ascendant: (lagna.rasi_number - 1) * 30 + lagna.degrees });
+    const dig = getDigBala(p.planet, { ascendant: lagnaLong, planetLong: longitude });
     const kala = p.is_retrograde ? 30 : 60;
     const total = sthana + dig + kala;
     result.push({

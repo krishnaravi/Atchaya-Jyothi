@@ -42,7 +42,7 @@ const timezone = Joi.string()
   .messages({ 'any.invalid': '{{#label}} must be a valid IANA timezone (e.g. Asia/Kolkata)' });
 
 const lang = Joi.string().valid('en', 'ta', 'te', 'kn', 'ml', 'hi').default('en');
-const ayanamsa = Joi.string().valid('lahiri', 'raman', 'krishnamurti', 'yukteswar', 'de_luce', 'fagan_bradley').default('lahiri');
+const ayanamsa = Joi.string().valid('lahiri', 'kp', 'krishnamurti', 'raman', 'yukteswar', 'fagan_bradley', 'thirukanidham', 'vakkiya').default('lahiri');
 
 const DASA_PLANETS = ['Ketu', 'Venus', 'Sun', 'Moon', 'Mars', 'Rahu', 'Jupiter', 'Saturn', 'Mercury'];
 const TRANSIT_PLANETS = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
