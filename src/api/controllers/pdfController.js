@@ -8,6 +8,13 @@ const { calculateVargaCharts } = require('../../core/astrology/varga');
 const moment = require('moment-timezone');
 const logger = require('../../utils/logger');
 
+const escapeHtml = (str) => String(str)
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#39;');
+
 const generatePDF = async (req, res) => {
   try {
     const { name, date_of_birth, time_of_birth, latitude, longitude, timezone, lang, ayanamsa } = req.body;
@@ -54,7 +61,7 @@ const generatePDF = async (req, res) => {
 <h1>🪐 AstroJyothi - ஜாதக விவரம்</h1>
 <div class="info-box">
   <table>
-    <tr><td><b>பெயர்</b></td><td>${name || 'Unknown'}</td><td><b>பிறந்த தேதி</b></td><td>${date_of_birth}</td></tr>
+    <tr><td><b>பெயர்</b></td><td>${escapeHtml(name || 'Unknown')}</td><td><b>பிறந்த தேதி</b></td><td>${date_of_birth}</td></tr>
     <tr><td><b>பிறந்த நேரம்</b></td><td>${time_of_birth}</td><td><b>லக்னம்</b></td><td>${lagna.rasi} ${lagna.degrees}°</td></tr>
     <tr><td><b>சூர்யோதயம்</b></td><td>${basic.sunrise}</td><td><b>சூர்யாஸ்தமனம்</b></td><td>${basic.sunset}</td></tr>
   </table>

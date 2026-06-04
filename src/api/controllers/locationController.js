@@ -4,12 +4,17 @@ const logger = require('../../utils/logger');
 const searchLocation = (query) => {
   return new Promise((resolve, reject) => {
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&addressdetails=1`;
-    const options = { headers: { 'User-Agent': 'AstroJyothi/1.0' } };
-    https.get(url, options, (res) => {
+    const options = { headers: { 'User-Agent': 'AstroJyothi/1.0' }, timeout: 5000 };
+    const req = https.get(url, options, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
-      res.on('end', () => resolve(JSON.parse(data)));
-    }).on('error', reject);
+      res.on('end', () => {
+        try { resolve(JSON.parse(data)); }
+        catch (e) { reject(new Error('Invalid response from location service')); }
+      });
+    });
+    req.on('timeout', () => { req.destroy(); reject(new Error('Location search timed out')); });
+    req.on('error', reject);
   });
 };
 

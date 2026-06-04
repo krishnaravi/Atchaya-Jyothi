@@ -42,6 +42,20 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
+const aiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { success: false, message: 'Too many AI requests, please try again later.' }
+});
+app.use('/api/ai', aiLimiter);
+
+const pdfLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { success: false, message: 'Too many PDF requests, please try again later.' }
+});
+app.use('/api/pdf', pdfLimiter);
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 morgan.token('request-id', (req) => req.requestId);
