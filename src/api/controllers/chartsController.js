@@ -63,8 +63,8 @@ const listCharts = async (req, res) => {
     const limit  = Math.min(50, Math.max(1, parseInt(req.query.limit) || 10));
     const offset = (page - 1) * limit;
 
-    // LIMIT/OFFSET must be interpolated — mysql2 prepared statements reject integer params there
-    const [rows] = await db.execute(
+    // Use query() (text protocol) — execute() (binary protocol) mishandles LEFT JOIN + LIMIT/OFFSET combo
+    const [rows] = await db.query(
       `SELECT bd.id, bd.name, bd.date_of_birth, bd.time_of_birth,
               bd.place_of_birth, bd.gender, bd.created_at,
               hr.id AS report_id, hr.language
@@ -130,7 +130,9 @@ const getChart = async (req, res) => {
         gender:        row.gender,
         language:      row.language,
         created_at:    row.created_at,
-        chart:         row.report_data || null  // mysql2 auto-parses JSON columns
+        chart:         row.report_data
+                         ? (typeof row.report_data === 'string' ? JSON.parse(row.report_data) : row.report_data)
+                         : null
       }
     });
   } catch (err) {
