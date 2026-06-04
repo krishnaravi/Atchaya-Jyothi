@@ -15,6 +15,14 @@ const escapeHtml = (str) => String(str)
   .replace(/"/g, '&quot;')
   .replace(/'/g, '&#39;');
 
+let _browser = null;
+const getBrowser = async () => {
+  if (!_browser || !_browser.isConnected()) {
+    _browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+  }
+  return _browser;
+};
+
 const generatePDF = async (req, res) => {
   try {
     const { name, date_of_birth, time_of_birth, latitude, longitude, timezone, lang, ayanamsa } = req.body;
@@ -90,11 +98,11 @@ const generatePDF = async (req, res) => {
 </div>
 </body></html>`;
 
-    const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    const browser = await getBrowser();
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle0' });
     const pdf = await page.pdf({ format: 'A4', printBackground: true, margin: { top: '10mm', bottom: '10mm', left: '10mm', right: '10mm' } });
-    await browser.close();
+    await page.close();
 
     res.set({ 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename="AstroJyothi_${name || 'Horoscope'}.pdf"` });
     res.send(pdf);

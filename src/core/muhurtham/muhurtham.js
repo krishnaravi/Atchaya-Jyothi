@@ -89,18 +89,21 @@ const checkMuhurtham = (panchangam, occasionType, time) => {
   return { suitable, score, good_points, reasons };
 };
 
-const findMuhurthamDates = (startDate, endDate, occasionType, latitude, longitude, timezone, lang) => {
+const findMuhurthamDates = async (startDate, endDate, occasionType, latitude, longitude, timezone, lang) => {
   const results = [];
   let current = new Date(startDate);
   const end = new Date(endDate);
-  while(current <= end){
+  let i = 0;
+  while (current <= end) {
     const dateStr = current.toISOString().split('T')[0];
     const panchangam = calculatePanchangam(dateStr, latitude, longitude, timezone, lang||'en');
     const check = checkMuhurtham(panchangam, occasionType, null);
-    if(check.suitable){
+    if (check.suitable) {
       results.push({ date: dateStr, day: panchangam.day, tithi: panchangam.tithi, nakshatra: panchangam.nakshatra_number, yoga: panchangam.yoga, score: check.score, good_points: check.good_points, rahu_kalam: panchangam.rahu_kalam, yamagandam: panchangam.yamagandam });
     }
     current.setDate(current.getDate() + 1);
+    // Yield every 30 days so the event loop can handle other requests
+    if (++i % 30 === 0) await new Promise(r => setImmediate(r));
   }
   return results;
 };
