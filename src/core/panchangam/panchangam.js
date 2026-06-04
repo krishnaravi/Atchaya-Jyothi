@@ -1,6 +1,6 @@
 const swisseph = require('swisseph');
 const moment = require('moment-timezone');
-const { getJulianDay } = require('../astrology/planets');
+const { getJulianDay, NAKSHATRA_NAMES } = require('../astrology/planets');
 const TITHI_NAMES = {en:['Prathama','Dvitiya','Tritiya','Chaturthi','Panchami','Shashthi','Saptami','Ashtami','Navami','Dashami','Ekadashi','Dwadashi','Trayodashi','Chaturdashi','Purnima','Prathama','Dvitiya','Tritiya','Chaturthi','Panchami','Shashthi','Saptami','Ashtami','Navami','Dashami','Ekadashi','Dwadashi','Trayodashi','Chaturdashi','Amavasya'],ta:['Prathama','Dvitiya','Tritiya','Chaturthi','Panchami','Shashthi','Saptami','Ashtami','Navami','Dashami','Ekadashi','Dwadashi','Trayodashi','Chaturdashi','Purnima','Prathama','Dvitiya','Tritiya','Chaturthi','Panchami','Shashthi','Saptami','Ashtami','Navami','Dashami','Ekadashi','Dwadashi','Trayodashi','Chaturdashi','Amavasya']};
 const YOGA_NAMES = {en:['Vishkamba','Preeti','Ayushman','Saubhagya','Shobhana','Atiganda','Sukarma','Dhriti','Shula','Ganda','Vriddhi','Dhruva','Vyaghata','Harshana','Vajra','Siddhi','Vyatipata','Variyan','Parigha','Shiva','Siddha','Sadhya','Shubha','Shukla','Brahma','Indra','Vaidhriti'],ta:['Vishkamba','Preeti','Ayushman','Saubhagya','Shobhana','Atiganda','Sukarma','Dhriti','Shula','Ganda','Vriddhi','Dhruva','Vyaghata','Harshana','Vajra','Siddhi','Vyatipata','Variyan','Parigha','Shiva','Siddha','Sadhya','Shubha','Shukla','Brahma','Indra','Vaidhriti']};
 const KARANA_NAMES = {en:['Bava','Balava','Kaulava','Taitila','Gara','Vanija','Vishti','Shakuni','Chatushpada','Naga','Kimstughna'],ta:['Bava','Balava','Kaulava','Taitila','Gara','Vanija','Vishti','Shakuni','Chatushpada','Naga','Kimstughna']};
@@ -25,6 +25,6 @@ const calculatePanchangam = (dateStr, latitude, longitude, timezone, lang='ta') 
   const dt = moment.tz(dateStr, 'YYYY-MM-DD', timezone);
   const dayOfWeek = dt.day();
   const {sunrise, sunset} = getSunriseSunset(dateStr, latitude, longitude, timezone);
-  return { date:dateStr, day:DAY_NAMES[lang][dayOfWeek], tithi:TITHI_NAMES[lang][tithi.index], tithi_number:tithi.index+1, nakshatra_number:nakshatraIndex+1, yoga:YOGA_NAMES[lang][yoga.index], karana:KARANA_NAMES[lang][karana.index], sunrise, sunset, rahu_kalam:getUpagrahaTime(RAHU_KALAM,dayOfWeek,sunrise), yamagandam:getUpagrahaTime(YAMAGANDAM,dayOfWeek,sunrise), gulikai:getUpagrahaTime(GULIKAI,dayOfWeek,sunrise) };
+  return { date:dateStr, day:DAY_NAMES[lang][dayOfWeek], tithi:TITHI_NAMES[lang][tithi.index], tithi_number:tithi.index+1, nakshatra:(NAKSHATRA_NAMES[lang]||NAKSHATRA_NAMES.en)[nakshatraIndex], nakshatra_number:nakshatraIndex+1, yoga:YOGA_NAMES[lang][yoga.index], karana:KARANA_NAMES[lang][karana.index], sunrise, sunset, rahu_kalam:getUpagrahaTime(RAHU_KALAM,dayOfWeek,sunrise), yamagandam:getUpagrahaTime(YAMAGANDAM,dayOfWeek,sunrise), gulikai:getUpagrahaTime(GULIKAI,dayOfWeek,sunrise) };
 };
 module.exports = { calculatePanchangam, TITHI_NAMES, YOGA_NAMES, KARANA_NAMES, DAY_NAMES };
