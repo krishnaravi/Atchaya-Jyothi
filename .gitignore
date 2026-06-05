@@ -4,3 +4,4 @@ logs/
 backups/
 .claude/
 *.svg
+test.pdf
