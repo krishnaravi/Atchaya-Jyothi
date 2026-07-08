@@ -1,4 +1,6 @@
 const https = require('https');
+const { v4: uuidv4 } = require('uuid');
+const db = require('../../config/database');
 const logger = require('../../utils/logger');
 
 const searchLocation = (query) => {
@@ -42,4 +44,34 @@ const getLocation = async (req, res) => {
   }
 };
 
-module.exports = { getLocation };
+const saveLocation = async (req, res) => {
+  try {
+    const { place_name, district, state, country, latitude, longitude, timezone } = req.body;
+
+    const [existing] = await db.execute(
+      'SELECT * FROM locations WHERE place_name = ? AND district <=> ? LIMIT 1',
+      [place_name, district || null]
+    );
+    if (existing.length > 0) {
+      return res.json({ success: true, message: 'Location already exists', data: existing[0] });
+    }
+
+    const id = uuidv4();
+    await db.execute(
+      'INSERT INTO locations (id, place_name, district, state, country, latitude, longitude, timezone) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [id, place_name, district || null, state || null, country, latitude, longitude, timezone]
+    );
+
+    logger.info('Location saved: ' + place_name);
+    res.status(201).json({
+      success: true,
+      message: 'Location saved',
+      data: { id, place_name, district, state, country, latitude, longitude, timezone },
+    });
+  } catch (err) {
+    logger.error(err);
+    return res.status(500).json({ success: false, message: 'Failed to save location' });
+  }
+};
+
+module.exports = { getLocation, saveLocation };

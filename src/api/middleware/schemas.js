@@ -190,6 +190,16 @@ const locationSchema = Joi.object({
   query: Joi.string().min(2).max(200).required(),
 });
 
+const saveLocationSchema = Joi.object({
+  place_name: Joi.string().min(2).max(200).required(),
+  district:   Joi.string().max(100).allow('').optional(),
+  state:      Joi.string().max(100).allow('').optional(),
+  country:    Joi.string().max(100).default('India'),
+  latitude:   Joi.number().min(-90).max(90).required(),
+  longitude:  Joi.number().min(-180).max(180).required(),
+  timezone:   Joi.string().max(50).default('Asia/Kolkata'),
+});
+
 // ── Research ──────────────────────────────────────────────────────────────────
 
 const spouseStarSchema = Joi.object({
@@ -222,6 +232,7 @@ module.exports = {
   muhurthamSchema,
   matchmakingSchema,
   locationSchema,
+  saveLocationSchema,
   spouseStarSchema,
   nakshatraCompatibilitySchema,
   pulippaniSchema,
